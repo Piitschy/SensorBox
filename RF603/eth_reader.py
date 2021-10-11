@@ -8,6 +8,5 @@ sock = socket.socket(socket.AF_INET, # Internet
 sock.bind(("", UDP_PORT))
  
 while True:
-    data, addr = sock.recvfrom(168) # buffer size is 4096 bytes
-    dataList = str(data).split('(')
-    print("received message:", dataList)
+    data, addr = sock.recvfrom(1024)
+    print("received message:", data) 
