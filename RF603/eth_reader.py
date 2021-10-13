@@ -9,4 +9,5 @@ sock.bind(("", UDP_PORT))
  
 while True:
     data, addr = sock.recvfrom(1024)
-    print("received message:", data) 
+    print("Adress", addr) 
+    
