@@ -128,7 +128,7 @@ class RF603:
     print(text)
 
 
-class Measure:
+class Measurement:
   def __init__(self):
     pass
 
