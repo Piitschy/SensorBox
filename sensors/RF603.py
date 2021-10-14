@@ -3,6 +3,7 @@ import numpy as np
 import socket
 import struct
 from typing import Tuple, List
+import usb.core
 
 ### DUMMY ###
 
@@ -10,13 +11,13 @@ DATA = b'\xda\x15\x03\xda\x15\x03\xda\x15\x03\xda\x15\x03\xda\x15\x03\xda\x15\x0
 
 ### BASE FUNKTIONS
 
-class BaseFunctions:
+class Sensor(object):
   def turn_on(self):
     pass
 
 ### CONECTIONS ###
 
-class Eth(BaseFunctions): #Default
+class Eth(Sensor): #Default
   """Default Mode of this module
 
   Returns:
@@ -145,13 +146,25 @@ class Eth(BaseFunctions): #Default
   def _alert(self,text):
     print(text)
 
-class Serial(BaseFunctions):
-  pass
+class _Serial(Sensor):
+  def __init__(self):
+    pass
 
-class RS485(Serial):
-  pass
+class _USB(Sensor):
+  def __init__(self,idVendor=0x0403,idProduct=0x6001):
+    self.dev=usb.core.find(idVendor=idVendor, idProduct=idProduct)
+    self.ep=self.dev[0].interfaces()[0].endpoints()[0]
+    self.i=self.dev[0].interfaces()[0].bInterfaceNumber
+    self.dev.reset()
 
-class RS232(Serial):
+class RS232(_Serial, _USB):
+  def __init__(self,mode:str,idVendor=0x0403, idProduct=0x6001): #mode: usb | serial
+    if mode == "usb":
+      _USB.__init__(idVendor=idVendor, idProduct=idProduct)
+    if mode == "serial":
+      _Serial.__init__(self)
+
+class RS485(RS232):
   pass
 
 sys.modules[__name__] = Eth
