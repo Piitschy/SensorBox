@@ -145,7 +145,13 @@ class Eth(BaseFunctions): #Default
   def _alert(self,text):
     print(text)
 
-class RS485(BaseFunctions):
+class Serial(BaseFunctions):
+  pass
+
+class RS485(Serial):
+  pass
+
+class RS232(Serial):
   pass
 
 sys.modules[__name__] = Eth
