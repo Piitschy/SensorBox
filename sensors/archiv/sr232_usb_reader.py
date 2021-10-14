@@ -10,7 +10,4 @@ if dev.is_kernel_driver_active(i):
 
 dev.set_configuration()
 eaddr=ep.bEndpointAddress
-
-for byte in range(100):
-  r=dev.read(eaddr,1024)
-  print(r)
+r=dev.read(eaddr,1024)
