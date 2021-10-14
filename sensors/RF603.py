@@ -37,7 +37,7 @@ class Eth(Sensor): #Default
     'mRange': 508
   }
 
-  def __init__(self, ip:str=IP_SOURCE, udp_port:int=UDP_PORT_DEST, serial:int=None, ip_dest:str=IP_DEST, auto_connect=False):
+  def __init__(self, ip:str=IP_SOURCE, udp_port:int=UDP_PORT_DEST, serial:int=None, ip_dest:str=IP_DEST, auto_connect=True):
     """Generates an Sensor object for RIFTEK RF603.
     You could find it by IP or serial number.
     Don't forget to connect after creating...
@@ -95,6 +95,9 @@ class Eth(Sensor): #Default
     self.serial = serial
     self.conneced = True
     return True
+
+  def read(self):
+    pass
 
   def listen(self,buffer:int=1024):
     """print live distance measurements
@@ -156,15 +159,24 @@ class _USB(Sensor):
     self.ep=self.dev[0].interfaces()[0].endpoints()[0]
     self.i=self.dev[0].interfaces()[0].bInterfaceNumber
     self.dev.reset()
+    
+    if self.dev.is_kernel_driver_active(self.i):
+      self.dev.detach_kernel_driver(self.i)
+
+    self.dev.set_configuration()
+    self.eaddr=self.ep.bEndpointAddress
+
+  def read(self):
+    return self.dev.read(self.eaddr,1024)
 
 class RS232(_Serial, _USB):
   def __init__(self,mode:str,idVendor=0x0403, idProduct=0x6001): #mode: usb | serial
     if mode == "usb":
-      _USB.__init__(idVendor=idVendor, idProduct=idProduct)
+      _USB.__init__(self, idVendor=idVendor, idProduct=idProduct)
     if mode == "serial":
       _Serial.__init__(self)
 
 class RS485(RS232):
   pass
 
-sys.modules[__name__] = Eth
+#sys.modules[__name__] = Eth
