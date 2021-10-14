@@ -65,10 +65,12 @@ class RF603:
     serial = serial or self.serial
     
     while True:
-      _, found_serial, base, mRange, addr = self.receive()
+      _, found_serial, base, mRange, addr = self.receive(filter=False)
       if addr == (ip,self.UDP_PORT_SOURCE) or found_serial == serial:
         print(f'Found {found_serial} on {addr[0]}:{addr[1]}')
         break
+    self.ip_source = addr[0]
+    self.udp_port = addr[1]
     self.base = base
     self.mRange = mRange
     self.serial = serial
@@ -87,7 +89,7 @@ class RF603:
         for d in distances:
           print(d)
 
-  def receive(self,buffer:int=1024) -> Tuple[np.array, int, int, int, tuple[str, int]]:
+  def receive(self,buffer:int=1024,filter:bool=True) -> Tuple[np.array, int, int, int, tuple[str, int]] or None:
     """Waiting for packets from connected sensor
 
     Args:
@@ -96,9 +98,14 @@ class RF603:
     Returns:
         np.array, int, int, int, tuple[str, int]: measure values, serial number, base distance, measurement range and address(IP, Port)
     """
-    data, addr = self.socket.recvfrom(buffer)
-    dists, serial, base, mRange = self._unpack(data)
-    return dists, serial, base, mRange , addr
+    while True:
+      data, addr = self.socket.recvfrom(buffer)
+      if filter and (addr[0] != self.ip_source):
+        continue
+      dists, serial, base, mRange = self._unpack(data)
+      if filter and (serial != self.serial):
+        continue
+      return dists, serial, base, mRange , addr
 
   def _unpack(self,data:bytes) -> Tuple[np.array, int, int, int]:
       measurements = np.array([self._struc_unpack(data,i) for i in range(0,504,3)])
@@ -116,6 +123,15 @@ class RF603:
 
   def _get_distance(self,d,s:int=50):
     return (d*s)/self.NORM
+  
+  def _alert(self,text):
+    print(text)
+
+
+class Measure:
+  def __init__(self):
+    pass
+
 
 sensor1 = RF603(serial=29602,auto_connect=True)
 
