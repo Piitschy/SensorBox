@@ -170,7 +170,7 @@ class _USB(Sensor):
     return self.dev.read(self.eaddr,1024)
 
 class RS232(_Serial, _USB):
-  def __init__(self,mode:str,idVendor=0x0403, idProduct=0x6001): #mode: usb | serial
+  def __init__(self,mode:str='usb',idVendor=0x0403, idProduct=0x6001): #mode: usb | serial
     if mode == "usb":
       _USB.__init__(self, idVendor=idVendor, idProduct=idProduct)
     if mode == "serial":
