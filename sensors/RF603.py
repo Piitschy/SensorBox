@@ -14,6 +14,8 @@ DATA = b'\xda\x15\x03\xda\x15\x03\xda\x15\x03\xda\x15\x03\xda\x15\x03\xda\x15\x0
 class Sensor(object):
   def turn_on(self):
     pass
+  def _alert(self,text):
+    print(text)
 
 ### CONECTIONS ###
 
@@ -145,9 +147,7 @@ class Eth(Sensor): #Default
 
   def _get_distance(self,d,s:int=50):
     return (d*s)/self.NORM
-  
-  def _alert(self,text):
-    print(text)
+
 
 class _Serial(Sensor):
   def __init__(self):
@@ -156,7 +156,11 @@ class _Serial(Sensor):
 class _USB(Sensor):
   def __init__(self,idVendor=0x0403,idProduct=0x6001):
     self.dev=usb.core.find(idVendor=idVendor, idProduct=idProduct)
-    self.ep=self.dev[0].interfaces()[0].endpoints()[0]
+    try:
+      self.ep=self.dev[0].interfaces()[0].endpoints()[0]
+    except TypeError:
+      self._alert('Device not found')
+      exit(1)
     self.i=self.dev[0].interfaces()[0].bInterfaceNumber
     self.dev.reset()
     
@@ -166,8 +170,8 @@ class _USB(Sensor):
     self.dev.set_configuration()
     self.eaddr=self.ep.bEndpointAddress
 
-  def read(self):
-    return self.dev.read(self.eaddr,1024)
+  def read(self,size_or_buffer:int=1024):
+    return self.dev.read(self.eaddr,size_or_buffer)
 
 class RS232(_Serial, _USB):
   def __init__(self,mode:str='usb',idVendor=0x0403, idProduct=0x6001): #mode: usb | serial
