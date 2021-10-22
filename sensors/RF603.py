@@ -159,7 +159,7 @@ class Eth(Sensor): #Default
 
 
 class _Serial(Sensor):
-  def __init__(self,port='/dev/ttyUSB0',timeout:int=1):
+  def __init__(self,port='/dev/ttyUSB0',timeout:int=10):
     ser = serial.Serial(port,timeout=timeout)
     print(ser.isOpen())
     cmd = [0x01,0x83,0x00,0x00]
