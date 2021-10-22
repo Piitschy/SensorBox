@@ -3,7 +3,8 @@ import numpy as np
 import socket
 import struct
 from typing import Tuple, List
-import usb.core
+#import usb.core
+import serial
 
 ### DUMMY ###
 
@@ -12,11 +13,25 @@ DATA = b'\xda\x15\x03\xda\x15\x03\xda\x15\x03\xda\x15\x03\xda\x15\x03\xda\x15\x0
 ### BASE FUNKTIONS
 
 class Sensor(object):
+
+  ENDIAN = '<H'
+
   def turn_on(self):
     pass
   def _alert(self,text):
     print(text)
+  
+  def _struc_unpack(self,bytestr:bytes,pos:int=0,bits:int=16):
+    if bits == 16:
+      return struct.unpack(self.ENDIAN, bytestr[pos:pos+2])[0]
+    elif bits == 8:
+      return int(bin(bytestr[pos]),2)
+    else:
+      print('Wrong bits')
+      return 0
 
+  def _get_distance(self,d,s:int=50):
+    return (d*s)/self.NORM
 ### CONECTIONS ###
 
 class Eth(Sensor): #Default
@@ -26,7 +41,7 @@ class Eth(Sensor): #Default
       RF603.ETH: Instance of RF603 via ethernet
   """
   NORM = int(str(4000),16)
-  ENDIAN = '<H'
+  #ENDIAN = '<H'
   IP_DEST = '255.255.255.255'
   IP_SOURCE = '192.168.0.3'
   UDP_PORT_DEST = 603
@@ -139,25 +154,27 @@ class Eth(Sensor): #Default
       dists = np.array([self._get_distance(m,mRange) for m in measurements])
       return dists, serial, base, mRange
 
-  def _struc_unpack(self,bytestr:bytes,pos:int=0,bits:int=16):
-    if bits == 16:
-      return struct.unpack(self.ENDIAN, bytestr[pos:pos+2])[0]
-    else:
-      return int(bin(bytestr[pos]),2)
-
   def _get_distance(self,d,s:int=50):
     return (d*s)/self.NORM
 
 
 class _Serial(Sensor):
-  def __init__(self):
-    pass
+  def __init__(self,port='/dev/ttyUSB0',timeout:int=1):
+    ser = serial.Serial(port,timeout=timeout)
+    print(ser.isOpen())
+    ser.write(b'\x01\x81')
+    s=ser.read(6)
+    print(s)
+    ser.close()
 
 class _USB(Sensor):
   def __init__(self,idVendor=0x0403,idProduct=0x6001):
+    import usb.core
     self.dev=usb.core.find(idVendor=idVendor, idProduct=idProduct)
     try:
-      self.ep=self.dev[0].interfaces()[0].endpoints()[0]
+      eps=self.dev[0].interfaces()[0].endpoints()
+      self.ep_in=eps[0]
+      self.ep_out=eps[1]
     except TypeError:
       self._alert('Device not found')
       exit(1)
@@ -168,13 +185,18 @@ class _USB(Sensor):
       self.dev.detach_kernel_driver(self.i)
 
     self.dev.set_configuration()
-    self.eaddr=self.ep.bEndpointAddress
+    self.eaddr_in=self.ep_in.bEndpointAddress
+    self.eaddr_out=self.ep_out.bEndpointAddress
 
-  def read(self,size_or_buffer:int=1024):
-    return self.dev.read(self.eaddr,size_or_buffer)
+  def read(self,size_or_buffer:int=1024,timeout=1000):
+    return self.dev.read(self.eaddr_in,size_or_buffer,timeout)
+  
+  def write(self,req_code:bytes=None,msg:bytes=b'',addr:bytes=b'0x01',timeout=1000):
+    payload = addr+req_code+msg
+    return self.dev.write(self.eaddr_out,payload,timeout)
 
 class RS232(_Serial, _USB):
-  def __init__(self,mode:str='usb',idVendor=0x0403, idProduct=0x6001): #mode: usb | serial
+  def __init__(self,mode:str='serial',idVendor=0x0403, idProduct=0x6001): #mode: usb | serial
     if mode == "usb":
       _USB.__init__(self, idVendor=idVendor, idProduct=idProduct)
     if mode == "serial":
@@ -182,5 +204,7 @@ class RS232(_Serial, _USB):
 
 class RS485(RS232):
   pass
+
+
 
 #sys.modules[__name__] = Eth
