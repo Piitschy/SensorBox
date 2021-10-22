@@ -162,8 +162,10 @@ class _Serial(Sensor):
   def __init__(self,port='/dev/ttyUSB0',timeout:int=1):
     ser = serial.Serial(port,timeout=timeout)
     print(ser.isOpen())
-    ser.write(b'\x01\x81')
-    s=ser.read(6)
+    cmd = [0x01,0x83,0x00,0x00]
+    byte = serial.to_bytes(cmd)
+    ser.write(byte)
+    s=ser.read(64)
     print(s)
     ser.close()
 
