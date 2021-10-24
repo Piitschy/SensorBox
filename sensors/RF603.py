@@ -5,6 +5,7 @@ import struct
 from typing import Tuple, List
 #import usb.core
 import serial
+from sensors import utils
 
 ### DUMMY ###
 
@@ -15,12 +16,13 @@ DATA = b'\xda\x15\x03\xda\x15\x03\xda\x15\x03\xda\x15\x03\xda\x15\x03\xda\x15\x0
 class Sensor(object):
 
   ENDIAN = '<H'
+  NORM = int(str(4000),16)
 
   def turn_on(self):
     pass
   def _alert(self,text):
     print(text)
-  
+
   def _struc_unpack(self,bytestr:bytes,pos:int=0,bits:int=16):
     if bits == 16:
       return struct.unpack(self.ENDIAN, bytestr[pos:pos+2])[0]
@@ -159,15 +161,62 @@ class Eth(Sensor): #Default
 
 
 class _Serial(Sensor):
-  def __init__(self,port='/dev/ttyUSB0',timeout:int=10):
-    ser = serial.Serial(port,timeout=timeout)
-    print(ser.isOpen())
-    cmd = [0x01,0x83,0x00,0x00]
-    byte = serial.to_bytes(cmd)
-    ser.write(byte)
-    s=ser.read(64)
-    print(s)
-    ser.close()
+
+  parity = {
+    'odd' : serial.PARITY_ODD,
+    'even' : serial.PARITY_EVEN,
+  }
+
+  def __init__(self,port='/dev/ttyUSB0',addr:int=0x01,timeout:int=1,parity:str='even'):
+    self.ser = serial.Serial(port,timeout=timeout,parity=self.parity[parity])
+    self.addr = addr
+    if not self.ser.is_open:
+      self._alert('Device not found')
+      return 
+  
+  def write(self,data:bytes):
+    self.ser.write(data)
+    return self.ser.read(64)
+
+  def write_cmd(self,request:int,param:int=None,value:int=None):
+    cmd = self._cmd(request=request,param=param,value=value)
+    return self.write(cmd)
+
+  def identify(self):
+    c:int = utils.CMDS['ident']
+    a:dict = utils.ANS['ident']
+    cmd = self._cmd(c)
+    r = self.write(cmd)
+    return { k:self._answer(r,*v) for k,v in a.items()}
+
+  def turn(self,state:str='on'): # on | off
+    c = utils.CMDS['write']
+    t = utils.PARAMS['turn']
+    if state not in t:
+      print('unknown state')
+      return
+    cmd = self._cmd(*c+t[state])
+    self.write(cmd)
+    print('turned',state)
+    return True
+
+  def close(self):
+    self.ser.close()
+
+  def _cmd(self,request:int,param:int=None,value:int=None):
+    cmd = [self.addr]+request
+    cmd += [param,0x80] if param is not None else []
+    cmd += [value,0x80] if value is not None else []
+    print(cmd)
+    #print([hex(c) for c in cmd])
+    #print([bin(c) for c in cmd])
+    return serial.to_bytes(cmd)
+
+  def _answer(self,bytestr:bytes,pos:int,length:int=1):
+    start = pos*2
+    end = start+length*2
+    bits =[bin(b)[-4:] for b in bytestr]
+    return int('0b'+''.join(bits[start:end][::-1]),2)
 
 class _USB(Sensor):
   def __init__(self,idVendor=0x0403,idProduct=0x6001):
