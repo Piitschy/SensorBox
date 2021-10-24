@@ -16,7 +16,8 @@ STRUC = { #position in bytestring
 
 CMDS = {
   'ident': [0x81],
-  'write': [0x83]
+  'write': [0x83],
+  'measure':[0x86]
 }
 
 PARAMS = {
@@ -32,6 +33,9 @@ ANS = {
     'firmware':[1],
     'serial':[2,2],
     'base': [4,2],
-    'range':[6,2]
+    'mRange':[6,2]
+  },
+  'measure':{
+    'value':[0,2]
   }
 }

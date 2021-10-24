@@ -18,8 +18,19 @@ class Sensor(object):
   ENDIAN = '<H'
   NORM = int(str(4000),16)
 
-  def turn_on(self):
-    pass
+  mRange = 0
+  base = 0
+  serial_no = 0
+  firmware = 0
+  device_type = 0
+
+  def set_ident(self,device_type:int=0,firmware:int=0,serial_no:int=0,base:int=0,mRange:int=0):
+    self.device_type = device_type
+    self.firmware = firmware
+    self.serial_no = serial_no
+    self.base = base
+    self.mRange = mRange
+
   def _alert(self,text):
     print(text)
 
@@ -33,7 +44,8 @@ class Sensor(object):
       return 0
 
   def _get_distance(self,d,s:int=50):
-    return (d*s)/self.NORM
+      return (d*s)/self.NORM
+
 ### CONECTIONS ###
 
 class Eth(Sensor): #Default
@@ -76,8 +88,6 @@ class Eth(Sensor): #Default
     except PermissionError:
       print("no permissions to open this udp port... \ntry to start with sudo/admin!")
       return
-    self.serial = serial
-    self.base = self.mRange = None
     self.conneced = False
     if auto_connect:
       self.connect()
@@ -109,9 +119,7 @@ class Eth(Sensor): #Default
         break
     self.ip_source = addr[0]
     self.udp_port = addr[1]
-    self.base = base
-    self.mRange = mRange
-    self.serial = serial
+    self.set_ident(base=base, mRange=mRange,serial_no=serial)
     self.conneced = True
     return True
 
@@ -156,9 +164,6 @@ class Eth(Sensor): #Default
       dists = np.array([self._get_distance(m,mRange) for m in measurements])
       return dists, serial, base, mRange
 
-  def _get_distance(self,d,s:int=50):
-    return (d*s)/self.NORM
-
 
 class _Serial(Sensor):
 
@@ -167,12 +172,13 @@ class _Serial(Sensor):
     'even' : serial.PARITY_EVEN,
   }
 
-  def __init__(self,port='/dev/ttyUSB0',addr:int=0x01,timeout:int=1,parity:str='even'):
+  def __init__(self,port='/dev/ttyUSB0',addr:int=0x01,timeout:int=0.03,parity:str='even'):
     self.ser = serial.Serial(port,timeout=timeout,parity=self.parity[parity])
     self.addr = addr
     if not self.ser.is_open:
       self._alert('Device not found')
       return 
+    self.identify()
   
   def write(self,data:bytes):
     self.ser.write(data)
@@ -183,10 +189,20 @@ class _Serial(Sensor):
     return self.write(cmd)
 
   def identify(self):
-    c:int = utils.CMDS['ident']
-    a:dict = utils.ANS['ident']
-    cmd = self._cmd(c)
-    r = self.write(cmd)
+    result = self.request('ident')
+    print(result)
+    self.set_ident() # einsetzten
+    return result
+  
+  def measure(self):
+    result = self.request('measure')
+    return self._get_distance(result['value'],self.mRange)
+
+  def request(self,cmd:str,aws:str=None):
+    aws = aws or cmd
+    c:int = utils.CMDS[cmd]
+    a:dict = utils.ANS[aws]
+    r = self.write(self._cmd(c))
     return { k:self._answer(r,*v) for k,v in a.items()}
 
   def turn(self,state:str='on'): # on | off
@@ -195,7 +211,7 @@ class _Serial(Sensor):
     if state not in t:
       print('unknown state')
       return
-    cmd = self._cmd(*c+t[state])
+    cmd = self._cmd(c,*t[state])
     self.write(cmd)
     print('turned',state)
     return True
@@ -207,12 +223,9 @@ class _Serial(Sensor):
     cmd = [self.addr]+request
     cmd += [param,0x80] if param is not None else []
     cmd += [value,0x80] if value is not None else []
-    print(cmd)
-    #print([hex(c) for c in cmd])
-    #print([bin(c) for c in cmd])
     return serial.to_bytes(cmd)
 
-  def _answer(self,bytestr:bytes,pos:int,length:int=1):
+  def _answer(self,bytestr:bytes,pos:int=0,length:int=1):
     start = pos*2
     end = start+length*2
     bits =[bin(b)[-4:] for b in bytestr]
