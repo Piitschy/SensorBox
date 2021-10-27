@@ -143,7 +143,7 @@ class Eth(Sensor): #Default
       measurements = np.array([self._struc_unpack(data,i) for i in range(0,504,3)])
       serial =  self._struc_unpack(data,utils.ETH.STRUC['serial'])
       base = self._struc_unpack(data,utils.ETH.STRUC['base'])
-      mRange = self._struc_unpack(data,self.STRUC['mRange'])
+      mRange = self._struc_unpack(data,utils.ETH.STRUC['mRange'])
       dists = np.array([self._get_distance(m,mRange) for m in measurements])
       return dists, serial, base, mRange
 
