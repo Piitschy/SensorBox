@@ -10,10 +10,6 @@ from sensors.utils import RF603 as utils
 ### BASE FUNKTIONS
 
 class Sensor(object):
-
-  ENDIAN = '<H'
-  NORM = int(str(4000),16)
-
   mRange = 0
   base = 0
   serial_no = 0
@@ -32,7 +28,7 @@ class Sensor(object):
 
   def _struc_unpack(self,bytestr:bytes,pos:int=0,bits:int=16):
     if bits == 16:
-      return struct.unpack(self.ENDIAN, bytestr[pos:pos+2])[0]
+      return struct.unpack(utils.ENDIAN, bytestr[pos:pos+2])[0]
     elif bits == 8:
       return int(bin(bytestr[pos]),2)
     else:
@@ -40,7 +36,7 @@ class Sensor(object):
       return 0
 
   def _get_distance(self,d,s:int=50):
-      return (d*s)/self.NORM
+      return (d*s)/utils.NORM
 
 ### CONECTIONS ###
 
@@ -51,7 +47,7 @@ class Eth(Sensor): #Default
       RF603.ETH: Instance of RF603 via ethernet
   """
 
-  def __init__(self, ip:str=utils.ETH.IP_SOURCE, udp_port:int=utils.ETH.UDP_PORT_DEST, serial:int=None, ip_dest:str=utils.ETH.IP_DEST, auto_connect=True):
+  def __init__(self, ip:str=utils.ETH.IP_SOURCE, udp_port:int=utils.ETH.UDP_PORT_DEST, ip_dest:str=utils.ETH.IP_DEST, auto_connect=True):
     """Generates an Sensor object for RIFTEK RF603.
     You could find it by IP or serial number.
     Don't forget to connect after creating...
@@ -141,9 +137,9 @@ class Eth(Sensor): #Default
 
   def _unpack(self,data:bytes) -> Tuple[np.array, int, int, int]:
       measurements = np.array([self._struc_unpack(data,i) for i in range(0,504,3)])
-      serial =  self._struc_unpack(data,utils.ETH.STRUC['serial'])
-      base = self._struc_unpack(data,utils.ETH.STRUC['base'])
-      mRange = self._struc_unpack(data,utils.ETH.STRUC['mRange'])
+      serial =  self._struc_unpack(data,utils.ETH.POS['serial'])
+      base = self._struc_unpack(data,utils.ETH.POS['base'])
+      mRange = self._struc_unpack(data,utils.ETH.POS['mRange'])
       dists = np.array([self._get_distance(m,mRange) for m in measurements])
       return dists, serial, base, mRange
 
@@ -222,7 +218,7 @@ class _Serial(Sensor):
 
     Args:
         req (str): kind of request. 'ident' | 'write' | 'measure' | ... (look at utils)
-        aws (str, optional): expected format answer structure from utils. Defaults to None.
+        aws (str, optional): expected format answer structure from utils. Defaults to equal to req.
 
     Returns:
         dict: formated answare of the device
