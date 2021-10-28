@@ -149,7 +149,14 @@ class Eth(Sensor): #Default
 
 
 class _Serial(Sensor):
+  """Parent class for alle Types of serial connections
 
+  Args:
+      Sensor: used sensor
+
+  Returns:
+      Sensor: Tools to communicate with given sensor
+  """  
   parity = {
     'odd' : serial.PARITY_ODD,
     'even' : serial.PARITY_EVEN,
@@ -163,33 +170,79 @@ class _Serial(Sensor):
       return 
     self.identify()
   
-  def write(self,data:bytes):
+  def write(self,data:bytes) -> bytes:
+    """write a given bytestring on device and return the answer
+
+    Args:
+        data (bytes): command or request as bytes
+
+    Returns:
+        response (bytes): response of the device as bytestring
+    """    
     self.ser.write(data)
     return self.ser.read(64)
 
-  def write_cmd(self,request:int,param:int=None,value:int=None):
+  def write_cmd(self,request:int,param:int=None,value:int=None) -> bytes:
+    """write a given command in (hex-)integers on device.
+    The integer values can be found n the datasheet.
+
+    Args:
+        request (int): Number of the kind of request
+        param (int, optional): request parameter. Defaults to None.
+        value (int, optional): value of the request parameter. Defaults to None.
+
+    Returns:
+        bytes: response of the device as bytestring
+    """    
     cmd = self._cmd(request=request,param=param,value=value)
     return self.write(cmd)
 
-  def identify(self):
+  def identify(self) -> dict:
+    """send a identify request at device and set the response as sensor parameters
+
+    Returns:
+        dict: sensor parameters
+    """    
     result = self.request('ident')
     print(result)
     self.set_ident() # einsetzten
     return result
   
-  def measure(self):
+  def measure(self) -> float:
+    """get the currently measure value in mm
+
+    Returns:
+        float: distance in mm
+    """    
     result = self.request('measure')
     return self._get_distance(result['value'],self.mRange)
 
-  def request(self,cmd:str,aws:str=None):
-    aws = aws or cmd
-    c:int = utils.SERIAL.CMDS[cmd]
+  def request(self,req:str,aws:str=None)->dict:
+    """encode and write the given command in hexaintegers at the sensor and decode the response.
+
+    Args:
+        req (str): kind of request. 'ident' | 'write' | 'measure' | ... (look at utils)
+        aws (str, optional): expected format answer structure from utils. Defaults to None.
+
+    Returns:
+        dict: formated answare of the device
+    """    
+    aws = aws or req
+    c:int = utils.SERIAL.REQ[req]
     a:dict = utils.SERIAL.ANS[aws]
     r = self.write(self._cmd(c))
     return { k:self._answer(r,*v) for k,v in a.items()}
 
-  def turn(self,state:str='on'): # on | off
-    c = utils.SERIAL.CMDS['write']
+  def turn(self,state:str='on') -> bool: # on | off
+    """turn the laser of the sensor on or off to get into power saving mode.
+
+    Args:
+        state (str, optional): 'on' | 'off'. Defaults to 'on'.
+
+    Returns:
+        bool: True if transmission successfull
+    """    
+    c = utils.SERIAL.REQ['write']
     t = utils.SERIAL.PARAMS['turn']
     if state not in t:
       print('unknown state')
@@ -200,15 +253,38 @@ class _Serial(Sensor):
     return True
 
   def close(self):
+    """close the open serial port
+    """    
     self.ser.close()
 
-  def _cmd(self,request:int,param:int=None,value:int=None):
+  def _cmd(self,request:int,param:int=None,value:int=None) -> bytes:
+    """concat he elements of a command (look at datasheet for details)
+
+    Args:
+        request (int): integer of request
+        param (int, optional): integer of parameter. Defaults to None.
+        value (int, optional): integer of values. Defaults to None.
+
+    Returns:
+        bytes: command as bytestring
+    """    
     cmd = [self.addr]+request
     cmd += [param,0x80] if param is not None else []
     cmd += [value,0x80] if value is not None else []
     return serial.to_bytes(cmd)
 
-  def _answer(self,bytestr:bytes,pos:int=0,length:int=1):
+  def _answer(self,bytestr:bytes,pos:int=0,length:int=1) -> int:
+    """slice the given position (16bit) out of given bytestream.
+    WARNING: IT'S IN 16bit!!!!!!
+
+    Args:
+        bytestr (bytes): for example: response of the sensor.
+        pos (int, optional): startposition of the slice 16bit. Defaults to 0.
+        length (int, optional): length of the slice in 16bit. Defaults to 1.
+
+    Returns:
+        int: byteslice
+    """    
     start = pos*2
     end = start+length*2
     bits =[bin(b)[-4:] for b in bytestr]
