@@ -17,7 +17,7 @@ class RF603:
 
 
   class SERIAL:
-    CMDS = {
+    REQ = {
       'ident': [0x81],
       'write': [0x83],
       'measure':[0x86]
