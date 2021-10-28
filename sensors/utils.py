@@ -1,13 +1,13 @@
 
 class RF603:
+  NORM = int(str(4000),16)
+  ENDIAN = '<H'
   class ETH:
-    NORM = int(str(4000),16)
-    ENDIAN = '<H'
     IP_DEST = '255.255.255.255'
     IP_SOURCE = '192.168.0.3'
     UDP_PORT_DEST = 603
     UDP_PORT_SOURCE = 6003
-    STRUC = { #position in bytestring
+    POS = { #position in bytestring
       'no_of_measurements': 168,
       'len_of_measurements': 3,
       'serial': 504,
