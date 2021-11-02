@@ -1,4 +1,5 @@
 import sys
+import json5
 import numpy as np
 import socket
 import struct
