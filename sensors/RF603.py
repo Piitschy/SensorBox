@@ -1,4 +1,4 @@
-import sys
+import sys, os
 import json5
 import numpy as np
 import socket
@@ -6,9 +6,20 @@ import struct
 from typing import Tuple, List
 #import usb.core
 import serial
-from sensors.utils import RF603 as utils
+#from sensors.utils import RF603 as utils
 
-### BASE FUNKTIONS
+### CONSTANTS ###
+UTILS_PATH = 'utils/RF603.json5'
+SERIAL_PATH = '/dev/ttyUSB0'
+
+### LOAD UTILS ###
+dirname = os.path.dirname(__file__)
+filename = os.path.join(dirname, UTILS_PATH)
+with open(filename) as f:
+  content = f.read()
+  utils = json5.loads(content)
+
+### BASE FUNKTIONS ###
 
 class Sensor(object):
   mRange = 0
@@ -29,7 +40,7 @@ class Sensor(object):
 
   def _struc_unpack(self,bytestr:bytes,pos:int=0,bits:int=16):
     if bits == 16:
-      return struct.unpack(utils.ENDIAN, bytestr[pos:pos+2])[0]
+      return struct.unpack(utils['ENDIAN'], bytestr[pos:pos+2])[0]
     elif bits == 8:
       return int(bin(bytestr[pos]),2)
     else:
@@ -37,7 +48,7 @@ class Sensor(object):
       return 0
 
   def _get_distance(self,d,s:int=50):
-      return (d*s)/utils.NORM
+      return (d*s)/utils['NORM']
 
 ### CONECTIONS ###
 
@@ -48,7 +59,7 @@ class Eth(Sensor): #Default
       RF603.ETH: Instance of RF603 via ethernet
   """
 
-  def __init__(self, ip:str=utils.ETH.IP_SOURCE, udp_port:int=utils.ETH.UDP_PORT_DEST, ip_dest:str=utils.ETH.IP_DEST, auto_connect=True):
+  def __init__(self, ip:str=utils['ETH']['IP_SOURCE'], udp_port:int=utils['ETH']['UDP_PORT_DEST'], ip_dest:str=utils['ETH']['IP_DEST'], auto_connect=True):
     """Generates an Sensor object for RIFTEK RF603.
     You could find it by IP or serial number.
     Don't forget to connect after creating...
@@ -60,7 +71,7 @@ class Eth(Sensor): #Default
         ip_dest (str, optional): Target IP of the sensor (Not required). Defaults to IP_DEST.
     """
     self.ip_source = ip
-    self.sensor_addr = (self.ip_source,utils.ETH.UDP_PORT_SOURCE)
+    self.sensor_addr = (self.ip_source,utils['ETH']['UDP_PORT_SOURCE'])
     self.ip_dest = ip_dest
     self.socket = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
     try:
@@ -94,7 +105,7 @@ class Eth(Sensor): #Default
     
     while True:
       _, found_serial, base, mRange, addr = self.receive(filter=False)
-      if addr == (ip,utils.ETH.UDP_PORT_SOURCE) or found_serial == serial:
+      if addr == (ip,utils['ETH']['UDP_PORT_SOURCE']) or found_serial == serial:
         print(f'Found {found_serial} on {addr[0]}:{addr[1]}')
         break
     self.ip_source = addr[0]
@@ -138,9 +149,9 @@ class Eth(Sensor): #Default
 
   def _unpack(self,data:bytes) -> Tuple[np.array, int, int, int]:
       measurements = np.array([self._struc_unpack(data,i) for i in range(0,504,3)])
-      serial =  self._struc_unpack(data,utils.ETH.POS['serial'])
-      base = self._struc_unpack(data,utils.ETH.POS['base'])
-      mRange = self._struc_unpack(data,utils.ETH.POS['mRange'])
+      serial =  self._struc_unpack(data,utils['ETH']['POS']['serial'])
+      base = self._struc_unpack(data,utils['ETH']['POS']['base'])
+      mRange = self._struc_unpack(data,utils['ETH']['POS']['mRange'])
       dists = np.array([self._get_distance(m,mRange) for m in measurements])
       return dists, serial, base, mRange
 
@@ -159,7 +170,7 @@ class _Serial(Sensor):
     'even' : serial.PARITY_EVEN,
   }
 
-  def __init__(self,port='/dev/ttyUSB0',addr:int=0x01,timeout:int=0.03,parity:str='even'):
+  def __init__(self,port=SERIAL_PATH,addr:int=0x01,timeout:int=0.03,parity:str='even'):
     self.ser = serial.Serial(port,timeout=timeout,parity=self.parity[parity])
     self.addr = addr
     if not self.ser.is_open:
@@ -201,8 +212,13 @@ class _Serial(Sensor):
         dict: sensor parameters
     """    
     result = self.request('ident')
-    print(result)
-    self.set_ident() # einsetzten
+    self.set_ident(
+      device_type=result['type'],
+      firmware=result['firmware'],
+      serial_no=result['serial'],
+      base=result['base'],
+      mRange=result['mRange']
+    )
     return result
   
   def measure(self) -> float:
@@ -212,6 +228,7 @@ class _Serial(Sensor):
         float: distance in mm
     """    
     result = self.request('measure')
+    print(result)
     return self._get_distance(result['value'],self.mRange)
 
   def request(self,req:str,aws:str=None)->dict:
@@ -225,8 +242,8 @@ class _Serial(Sensor):
         dict: formated answare of the device
     """    
     aws = aws or req
-    c:int = utils.SERIAL.REQ[req]
-    a:dict = utils.SERIAL.ANS[aws]
+    c:int = utils['SERIAL']['REQ'][req]
+    a:dict = utils['SERIAL']['ANS'][aws]
     r = self.write(self._cmd(c))
     return { k:self._answer(r,*v) for k,v in a.items()}
 
@@ -239,8 +256,8 @@ class _Serial(Sensor):
     Returns:
         bool: True if transmission successfull
     """    
-    c = utils.SERIAL.REQ['write']
-    t = utils.SERIAL.PARAMS['turn']
+    c = utils['SERIAL']['REQ']['write']
+    t = utils['SERIAL']['PARAMS']['turn']
     if state not in t:
       print('unknown state')
       return
@@ -285,7 +302,11 @@ class _Serial(Sensor):
     start = pos*2
     end = start+length*2
     bits =[bin(b)[-4:] for b in bytestr]
-    return int('0b'+''.join(bits[start:end][::-1]),2)
+    try:
+      value = int('0b'+''.join(bits[start:end][::-1]),2)
+    except:
+      return 0
+    return value
 
 class _USB(Sensor):
   def __init__(self,idVendor=0x0403,idProduct=0x6001):
