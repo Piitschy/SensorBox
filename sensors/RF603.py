@@ -228,7 +228,6 @@ class _Serial(Sensor):
         float: distance in mm
     """    
     result = self.request('measure')
-    print(result)
     return self._get_distance(result['value'],self.mRange)
 
   def request(self,req:str,aws:str=None)->dict:
