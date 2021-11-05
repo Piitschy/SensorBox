@@ -9,7 +9,7 @@ import serial
 #from sensors.utils import RF603 as utils
 
 ### CONSTANTS ###
-UTILS_PATH = 'utils/RF603.json5'
+UTILS_PATH = 'utils.json5'
 SERIAL_PATH = '/dev/ttyUSB0'
 
 ### LOAD UTILS ###
