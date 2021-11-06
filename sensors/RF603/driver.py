@@ -10,7 +10,7 @@ import serial
 
 ### CONSTANTS ###
 UTILS_PATH = 'utils.json5'
-SERIAL_PATH = '/dev/ttyUSB0'
+SERIAL_PATH_DEFAULT = '/dev/ttyUSB0'
 
 ### LOAD UTILS ###
 dirname = os.path.dirname(__file__)
@@ -155,8 +155,7 @@ class Eth(Sensor): #Default
       dists = np.array([self._get_distance(m,mRange) for m in measurements])
       return dists, serial, base, mRange
 
-
-class _Serial(Sensor):
+class Serial(Sensor):
   """Parent class for alle Types of serial connections
 
   Args:
@@ -164,21 +163,16 @@ class _Serial(Sensor):
 
   Returns:
       Sensor: Tools to communicate with given sensor
-  """  
-  parity = {
-    'odd' : serial.PARITY_ODD,
-    'even' : serial.PARITY_EVEN,
-  }
-
-  def __init__(self,port=SERIAL_PATH,addr:int=0x01,timeout:int=0.03,parity:str='even'):
-    self.ser = serial.Serial(port,timeout=timeout,parity=self.parity[parity])
+  """
+  def __init__(self,port=SERIAL_PATH_DEFAULT,addr:int=0x01,timeout:int=0.03):
+    self.ser = serial.Serial(port,timeout=timeout,parity=serial.PARITY_EVEN)
     self.addr = addr
     if not self.ser.is_open:
       self._alert('Device not found')
       return 
     self.identify()
   
-  def write(self,data:bytes) -> bytes:
+  def _write(self,data:bytes) -> bytes:
     """write a given bytestring on device and return the answer
 
     Args:
@@ -203,7 +197,7 @@ class _Serial(Sensor):
         bytes: response of the device as bytestring
     """    
     cmd = self._cmd(request=request,param=param,value=value)
-    return self.write(cmd)
+    return self._write(cmd)
 
   def identify(self) -> dict:
     """send a identify request at device and set the response as sensor parameters
@@ -243,7 +237,7 @@ class _Serial(Sensor):
     aws = aws or req
     c:int = utils['SERIAL']['REQ'][req]
     a:dict = utils['SERIAL']['ANS'][aws]
-    r = self.write(self._cmd(c))
+    r = self._write(self._cmd(c))
     return { k:self._answer(r,*v) for k,v in a.items()}
 
   def turn(self,state:str='on') -> bool: # on | off
@@ -261,7 +255,7 @@ class _Serial(Sensor):
       print('unknown state')
       return
     cmd = self._cmd(c,*t[state])
-    self.write(cmd)
+    self._write(cmd)
     print('turned',state)
     return True
 
@@ -307,7 +301,7 @@ class _Serial(Sensor):
       return 0
     return value
 
-class _USB(Sensor):
+class USB(Sensor):
   def __init__(self,idVendor=0x0403,idProduct=0x6001):
     import usb.core
     self.dev=usb.core.find(idVendor=idVendor, idProduct=idProduct)
@@ -334,17 +328,5 @@ class _USB(Sensor):
   def write(self,req_code:bytes=None,msg:bytes=b'',addr:bytes=b'0x01',timeout=1000):
     payload = addr+req_code+msg
     return self.dev.write(self.eaddr_out,payload,timeout)
-
-class RS232(_Serial, _USB):
-  def __init__(self,mode:str='serial',idVendor=0x0403, idProduct=0x6001): #mode: usb | serial
-    if mode == "usb":
-      _USB.__init__(self, idVendor=idVendor, idProduct=idProduct)
-    if mode == "serial":
-      _Serial.__init__(self)
-
-class RS485(RS232):
-  pass
-
-
 
 #sys.modules[__name__] = Eth
