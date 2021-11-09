@@ -1,7 +1,7 @@
 json5
 numpy
 flask
-dotenv
+python-dotenv
 struct
 socket
 serial
