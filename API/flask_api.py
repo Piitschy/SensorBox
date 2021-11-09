@@ -4,18 +4,31 @@ import os
 import os.path as path
 from dotenv import load_dotenv
 
+### CONST ###
+
+GIT_PATH = path.abspath(path.join(path.dirname(path.realpath(__file__)),'..'))
+GIT_DIR = GIT_PATH.split(path.sep)[-1]
+
+
+### ENV ###
+
 ENV_KEYS = [
   'GIT_USER',
   'GIT_PASSWORD',
   'GIT_SERVER'
 ]
 
-GIT_PATH = path.abspath(path.join(path.dirname(path.realpath(__file__)),'..'))
-GIT_DIR = GIT_PATH.split(path.sep)[-1]
-
 load_dotenv(GIT_PATH)
 env = { k:os.getenv(k) for k in ENV_KEYS }
 env.update({'GIT_DIR':GIT_DIR})
+
+
+### FUNCTIONS ###
+
+def exec_command(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text:bool=True, **kwargs):
+  return subprocess.run(cmd, stdout=stdout, stderr=stderr, text=text, **kwargs).stdout
+
+### FLASK ###
 
 app = Flask(__name__)
 app.config["DEBUG"] = True
@@ -28,7 +41,7 @@ def home():
 def update():
   cmd = ['git','pull',f'https://{env["GIT_USER"]}:{env["GIT_PASSWORD"]}@{env["GIT_SERVER"]}/{env["GIT_USER"]}/{env["GIT_DIR"]}']
   print(cmd)
-  result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-  return result.stdout
+  result = exec_command(cmd)
+  return cmd+"\n"+result
 
 app.run()
