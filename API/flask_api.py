@@ -48,6 +48,7 @@ def home():
 
 @app.route('/update', methods=['GET'])
 def update():
+  print("Updating...",env['GIT_SERVER'])
   result = exec_command('update')
   # print(exec_command('requirements'))
   return result
