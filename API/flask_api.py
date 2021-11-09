@@ -42,6 +42,6 @@ def update():
   cmd = ['git','pull',f'https://{env["GIT_USER"]}:{env["GIT_PASSWORD"]}@{env["GIT_SERVER"]}/{env["GIT_USER"]}/{env["GIT_DIR"]}']
   print(cmd)
   result = exec_command(cmd)
-  return cmd+"\n"+result
+  return result
 
 app.run()
