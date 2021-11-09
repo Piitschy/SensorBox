@@ -39,9 +39,11 @@ def home():
 
 @app.route('/update', methods=['GET'])
 def update():
-  cmd = ['git','pull',f'https://{env["GIT_USER"]}:{env["GIT_PASSWORD"]}@{env["GIT_SERVER"]}/{env["GIT_USER"]}/{env["GIT_DIR"]}']
-  print(cmd)
-  result = exec_command(cmd)
+  cmd_update = ['git','pull',f'https://{env["GIT_USER"]}:{env["GIT_PASSWORD"]}@{env["GIT_SERVER"]}/{env["GIT_USER"]}/{env["GIT_DIR"]}']
+  cmd_requirements = ['sudo','pip','install','-r',GIT_PATH+'/requirements.txt']
+  print(cmd_update)
+  result = exec_command(cmd_update)
+  print(exec_command(cmd_requirements))
   return result
 
 app.run()
