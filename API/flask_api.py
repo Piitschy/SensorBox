@@ -13,7 +13,7 @@ ENV_KEYS = [
 GIT_PATH = path.abspath(path.join(path.dirname(path.realpath(__file__)),'..'))
 GIT_DIR = GIT_PATH.split(path.sep)[-1]
 
-load_dotenv()
+load_dotenv(GIT_PATH)
 env = { k:os.getenv(k) for k in ENV_KEYS }
 env.update({'GIT_DIR':GIT_DIR})
 
@@ -27,6 +27,7 @@ def home():
 @app.route('/update', methods=['GET'])
 def update():
   cmd = ['git','pull',f'https://{env["GIT_USER"]}:{env["GIT_PASSWORD"]}@{env["GIT_SERVER"]}/{env["GIT_USER"]}/{env["GIT_DIR"]}']
+  print(cmd)
   result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
   return result.stdout
 
