@@ -41,7 +41,6 @@ def exec_command(name:str, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text:
 ### FLASK ###
 
 app = Flask(__name__)
-app.config["DEBUG"] = True
 
 @app.route('/', methods=['GET'])
 def home():
@@ -57,4 +56,5 @@ def update():
 def reboot():
   return exec_command('reboot')
 
-app.run()
+if __name__ =='__main__':
+    app.run(host="0.0.0.0", debug=True)
