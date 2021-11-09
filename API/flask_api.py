@@ -23,10 +23,20 @@ env = { k:os.getenv(k) for k in ENV_KEYS }
 env.update({'GIT_DIR':GIT_DIR})
 
 
+### CMDs ###
+
+CMD = {
+  'update': ['git','pull',f'https://{env["GIT_USER"]}:{env["GIT_PASSWORD"]}@{env["GIT_SERVER"]}/{env["GIT_USER"]}/{env["GIT_DIR"]}'],
+  'requirements': ['sudo','pip','install','-r',GIT_PATH+'/requirements.txt'],
+  'reboot': ['sudo','reboot']
+}
+
 ### FUNCTIONS ###
 
-def exec_command(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text:bool=True, **kwargs):
-  return subprocess.run(cmd, stdout=stdout, stderr=stderr, text=text, **kwargs).stdout
+def exec_command(name:str, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text:bool=True, **kwargs):
+  if name not in CMD:
+    return None
+  return subprocess.run(CMD[name], stdout=stdout, stderr=stderr, text=text, **kwargs).stdout
 
 ### FLASK ###
 
@@ -39,11 +49,12 @@ def home():
 
 @app.route('/update', methods=['GET'])
 def update():
-  cmd_update = ['git','pull',f'https://{env["GIT_USER"]}:{env["GIT_PASSWORD"]}@{env["GIT_SERVER"]}/{env["GIT_USER"]}/{env["GIT_DIR"]}']
-  cmd_requirements = ['sudo','pip','install','-r',GIT_PATH+'/requirements.txt']
-  print(cmd_update)
-  result = exec_command(cmd_update)
-  print(exec_command(cmd_requirements))
+  result = exec_command('update')
+  # print(exec_command('requirements'))
   return result
+
+@app.route('/reboot', methods=['GET'])
+def reboot():
+  return exec_command('reboot')
 
 app.run()
