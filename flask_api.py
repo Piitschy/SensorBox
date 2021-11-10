@@ -64,7 +64,7 @@ def measure():
   s = RF603.Serial()
   m = s.measure()
   print(m)
-  return m
+  return str(m)
 
 if __name__ =='__main__':
     app.run(host="0.0.0.0", debug=True)
