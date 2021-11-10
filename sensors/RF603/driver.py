@@ -22,6 +22,7 @@ with open(filename) as f:
 ### BASE FUNKTIONS ###
 
 class Sensor(object):
+  name = 'RS603'
   mRange = 0
   base = 0
   serial_no = 0
@@ -329,4 +330,4 @@ class USB(Sensor):
     payload = addr+req_code+msg
     return self.dev.write(self.eaddr_out,payload,timeout)
 
-#sys.modules[__name__] = Eth
+#sys.modules[__name__] = Serial()
