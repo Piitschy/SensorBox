@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 
 ### CONST ###
 
-GIT_PATH = path.abspath(path.join(path.dirname(path.realpath(__file__)),'..'))
+GIT_PATH = path.abspath(path.join(path.dirname(path.realpath(__file__)),''))
 GIT_DIR = GIT_PATH.split(path.sep)[-1]
 
 
