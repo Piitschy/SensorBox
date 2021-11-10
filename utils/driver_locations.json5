@@ -1,0 +1,9 @@
+{
+  RF603: {
+    path: './sensors/RF603/driver.py',
+    modes: [
+      'Serial',
+      'Eth'
+    ]
+  }
+}
