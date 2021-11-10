@@ -1,5 +1,7 @@
 from flask import Flask
+import sensors.RF603.driver as RF603
 import subprocess
+from time import sleep
 import os
 import os.path as path
 from dotenv import load_dotenv
@@ -56,6 +58,13 @@ def update():
 @app.route('/reboot', methods=['GET'])
 def reboot():
   return exec_command('reboot')
+
+@app.route('/measure', methods=['GET'])
+def measure():
+  s = RF603.Serial()
+  m = s.measure()
+  print(m)
+  return m
 
 if __name__ =='__main__':
     app.run(host="0.0.0.0", debug=True)
