@@ -1,8 +1,0 @@
-{
-  SERIAL : {
-    laser: {
-      read : 0x25,
-      write : 0xA5
-    }
-  }
-}
