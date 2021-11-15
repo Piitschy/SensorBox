@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-import sensors.RF603.driver as RF603
+import drivers.RF603.driver as RF603
 import subprocess
 from time import sleep
 import os, json5
