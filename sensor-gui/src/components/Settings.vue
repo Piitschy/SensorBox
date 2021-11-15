@@ -1,6 +1,7 @@
 <template>
   <v-container>
     <v-row class="text-center">
+      Settings
       <!-- -->
     </v-row>
   </v-container>
@@ -10,7 +11,7 @@
   import Vue from 'vue'
 
   export default Vue.extend({
-    name: 'HelloWorld',
+    name: 'Settings',
 
     data: () => ({
       

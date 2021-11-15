@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter, { RouteConfig } from 'vue-router'
 import Dashboard from '../views/Dashboard.vue'
+import Settings from '../views/Settings.vue'
 
 Vue.use(VueRouter)
 
@@ -13,15 +14,15 @@ const routes: Array<RouteConfig> = [
   {
     path: '/sensors',
     name: 'Sensoren',
-    component: () => import(/* webpackChunkName: "sensors" */ '../views/Sensoren.vue')
-  },
-  {
-    path: '/about',
-    name: 'About',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+    component: () => import(/* webpackChunkName: "sensors" */ '../views/Sensoren.vue')
+  },
+  {
+    path: '/settings',
+    name: 'Settings',
+    component: Settings,
   }
 ]
 
