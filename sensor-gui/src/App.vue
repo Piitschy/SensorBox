@@ -15,11 +15,12 @@
         ></v-avatar>
 
         <v-btn
-          v-for="link in links"
-          :key="link"
+          v-for="route in routes"
+          :key="route.path"
+          :to="route"
           text
         >
-          {{ link }}
+          {{ route.name }}
         </v-btn>
 
         <v-spacer></v-spacer>
@@ -76,6 +77,7 @@
               rounded="lg"
             >
               <!--  -->
+              <router-view></router-view>
             </v-sheet>
           </v-col>
         </v-row>
@@ -87,12 +89,12 @@
 <script>
   export default {
     data: () => ({
-      links: [
-        'Dashboard',
-        'Messages',
-        'Profile',
-        'Updates',
-      ],
+      
     }),
+    computed: {
+    routes () {
+      return this.$router.options.routes.filter(route => !route.meta || !route.meta.hidden)
+    },
+    }
   }
 </script>

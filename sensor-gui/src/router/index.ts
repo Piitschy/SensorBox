@@ -1,14 +1,19 @@
 import Vue from 'vue'
 import VueRouter, { RouteConfig } from 'vue-router'
-import Home from '../views/Home.vue'
+import Dashboard from '../views/Dashboard.vue'
 
 Vue.use(VueRouter)
 
 const routes: Array<RouteConfig> = [
   {
     path: '/',
-    name: 'Home',
-    component: Home
+    name: 'Dashboard',
+    component: Dashboard,
+  },
+  {
+    path: '/sensors',
+    name: 'Sensoren',
+    component: () => import(/* webpackChunkName: "sensors" */ '../views/Sensoren.vue')
   },
   {
     path: '/about',
