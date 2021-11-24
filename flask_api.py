@@ -6,6 +6,7 @@ import os, json5
 import os.path as path
 from dotenv import load_dotenv
 import importlib.util
+import shelve
 
 ### CONST ###
 
@@ -13,6 +14,7 @@ GIT_PATH = path.abspath(path.join(path.dirname(path.realpath(__file__)),''))
 GIT_DIR = GIT_PATH.split(path.sep)[-1]
 
 DRIVER_LOCATIONS_PATH = './utils/driver_locations.json5'
+DB_PATH = './utils/flask_db'
 
 ### ENV ###
 
@@ -74,6 +76,28 @@ def load_sensors(mode:str, devices:list=None):
   sensors = [driver() for driver in drivers]
   return sensors
 
+### DATABASE ###
+class DB():
+  def __init__(self,db_path):
+    self.db_path = db_path
+    db = shelve.open(db_path)
+    db.close()
+
+  def write(self,key:str,payload):
+    with shelve.open(self.db_path) as db:
+      db[key]=payload
+    return True
+
+  def read(self,key:str):
+    with shelve.open(self.db_path) as db:
+      payload = db[key]
+    return payload
+  
+  def delete(self,key:str):
+    with shelve.open(self.db_path) as db:
+      del db[key]
+    return True
+
 ### FLASK ###
 
 app = Flask(__name__)
@@ -96,6 +120,7 @@ def reboot():
 @app.route('/sensores/add', methods=['GET'])
 def detect_sensors():
   kwargs = get_kwargs_from_request(request,"device")
+
   return 
 
 @app.route('/sensores/drivers', methods=['GET'])
