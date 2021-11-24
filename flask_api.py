@@ -78,7 +78,7 @@ def load_sensors(mode:str, devices:list=None):
 
 ### DATABASE ###
 class DB():
-  def __init__(self,db_path):
+  def __init__(self,db_path:str=DB_PATH):
     self.db_path = db_path
     db = shelve.open(db_path)
     db.close()
@@ -120,7 +120,8 @@ def reboot():
 @app.route('/sensores/add', methods=['GET'])
 def detect_sensors():
   kwargs = get_kwargs_from_request(request,"device")
-
+  new_sensors = RF603('/dev/ttyUSB0')
+  db.write('s1',new_sensors)
   return 
 
 @app.route('/sensores/drivers', methods=['GET'])
@@ -135,5 +136,5 @@ def get_measure():
   return ms
 
 if __name__ =='__main__':
-  
+  db = DB()
   app.run(host="0.0.0.0", debug=True)
