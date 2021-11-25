@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-import drivers.RF603.driver as RF603
+#import drivers.RF603.driver as RF603
 import subprocess
 from time import sleep
 import os, json5
@@ -120,7 +120,7 @@ def reboot():
 @app.route('/sensores/add', methods=['GET'])
 def detect_sensors():
   kwargs = get_kwargs_from_request(request,"device")
-  new_sensors = RF603('/dev/ttyUSB0')
+  new_sensors = load_sensors('/dev/ttyUSB0')
   db.write('s1',new_sensors)
   return 
 
