@@ -1,12 +1,13 @@
 from flask import Flask, request, jsonify
-#import drivers.RF603.driver as RF603
+import drivers.RF603.driver as RF603
 import subprocess
 from time import sleep
 import os, json5
 import os.path as path
 from dotenv import load_dotenv
 import importlib.util
-import shelve
+from utils.db import DB
+from utils.confdict import conf
 
 ### CONST ###
 
@@ -14,7 +15,7 @@ GIT_PATH = path.abspath(path.join(path.dirname(path.realpath(__file__)),''))
 GIT_DIR = GIT_PATH.split(path.sep)[-1]
 
 DRIVER_LOCATIONS_PATH = './utils/driver_locations.json5'
-DB_PATH = './utils/flask_db'
+CONFIG_PATH = './utils/config.json5'
 
 ### ENV ###
 
@@ -60,7 +61,10 @@ def get_driver_list(filter_list:list=None):
     return sources
   return {k:v for k, v in sources.items() if k in filter_list}
 
-def load_sensors(mode:str, devices:list=None):
+def load_drivers(mode:str, devices:list=None,*args,**kwargs) -> list:
+  '''
+  Lädt sensoreninstanzen in eine Liste.
+  '''
   def import_from_path(name:str,path:str):
     spec = importlib.util.spec_from_file_location(name, path)
     driver = importlib.util.module_from_spec(spec)
@@ -68,35 +72,13 @@ def load_sensors(mode:str, devices:list=None):
     return driver
 
   def multi_import(sources:dict,mode:str=mode):
-    drivers = [import_from_path(source['name'],source['path']) for source in sources]
+    drivers = [import_from_path(name,source['path']) for name, source in sources.items()]
     return [getattr(driver, mode) for driver in drivers]
   
   sources = get_driver_list(devices)
   drivers = multi_import(sources, mode)
-  sensors = [driver() for driver in drivers]
-  return sensors
-
-### DATABASE ###
-class DB():
-  def __init__(self,db_path:str=DB_PATH):
-    self.db_path = db_path
-    db = shelve.open(db_path)
-    db.close()
-
-  def write(self,key:str,payload):
-    with shelve.open(self.db_path) as db:
-      db[key]=payload
-    return True
-
-  def read(self,key:str):
-    with shelve.open(self.db_path) as db:
-      payload = db[key]
-    return payload
-  
-  def delete(self,key:str):
-    with shelve.open(self.db_path) as db:
-      del db[key]
-    return True
+  #sensors = [driver(*args,**kwargs) for driver in drivers]
+  return drivers
 
 ### FLASK ###
 
@@ -120,7 +102,7 @@ def reboot():
 @app.route('/sensores/add', methods=['GET'])
 def detect_sensors():
   kwargs = get_kwargs_from_request(request,"device")
-  new_sensors = load_sensors('/dev/ttyUSB0')
+  new_sensors = load_drivers('/dev/ttyUSB0')
   db.write('s1',new_sensors)
   return 
 
@@ -137,4 +119,9 @@ def get_measure():
 
 if __name__ =='__main__':
   db = DB()
-  app.run(host="0.0.0.0", debug=True)
+  s = RF603.Serial()#load_drivers('Serial',['RF603'])[0]('/dev/ttyUSB0')
+  s.close()
+  db.write('s',s)
+  s = db.read('s')
+  print(s.identify())
+  #app.run(host="0.0.0.0", debug=True)
