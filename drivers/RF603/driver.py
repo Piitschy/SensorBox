@@ -264,6 +264,11 @@ class Serial(Sensor):
     """close the open serial port
     """    
     self.ser.close()
+  
+  def open(self):
+    """Reopen a port
+    """
+    self.ser.open()
 
   def _cmd(self,request:int,param:int=None,value:int=None) -> bytes:
     """concat he elements of a command (look at datasheet for details)
@@ -301,33 +306,5 @@ class Serial(Sensor):
     except:
       return 0
     return value
-
-class USB(Sensor):
-  def __init__(self,idVendor=0x0403,idProduct=0x6001):
-    import usb.core
-    self.dev=usb.core.find(idVendor=idVendor, idProduct=idProduct)
-    try:
-      eps=self.dev[0].interfaces()[0].endpoints()
-      self.ep_in=eps[0]
-      self.ep_out=eps[1]
-    except TypeError:
-      self._alert('Device not found')
-      exit(1)
-    self.i=self.dev[0].interfaces()[0].bInterfaceNumber
-    self.dev.reset()
-    
-    if self.dev.is_kernel_driver_active(self.i):
-      self.dev.detach_kernel_driver(self.i)
-
-    self.dev.set_configuration()
-    self.eaddr_in=self.ep_in.bEndpointAddress
-    self.eaddr_out=self.ep_out.bEndpointAddress
-
-  def read(self,size_or_buffer:int=1024,timeout=1000):
-    return self.dev.read(self.eaddr_in,size_or_buffer,timeout)
-  
-  def write(self,req_code:bytes=None,msg:bytes=b'',addr:bytes=b'0x01',timeout=1000):
-    payload = addr+req_code+msg
-    return self.dev.write(self.eaddr_out,payload,timeout)
 
 #sys.modules[__name__] = Serial()
