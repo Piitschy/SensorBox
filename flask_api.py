@@ -119,9 +119,9 @@ def get_measure():
 
 if __name__ =='__main__':
   db = DB()
-  s = RF603.Serial()#load_drivers('Serial',['RF603'])[0]('/dev/ttyUSB0')
-  s.close()
-  db.write('s',s)
+  #s = RF603.Serial()#load_drivers('Serial',['RF603'])[0]('/dev/ttyUSB0')
+  #s.close()
+  #db.write('s',s)
   ss:RF603.Serial = db.read('s')
   ss.open()
   print(ss.identify())
