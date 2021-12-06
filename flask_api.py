@@ -4,6 +4,7 @@ import subprocess
 from time import sleep
 import os, json5
 import os.path as path
+import sys
 from dotenv import load_dotenv
 import importlib.util
 from utils.db import DB
@@ -61,16 +62,16 @@ def get_driver_list(filter_list:list=None):
     return sources
   return {k:v for k, v in sources.items() if k in filter_list}
 
+def import_from_path(name:str,path:str):
+  spec = importlib.util.spec_from_file_location(name, path)
+  driver = importlib.util.module_from_spec(spec)
+  spec.loader.exec_module(driver)
+  return driver
+
 def load_drivers(mode:str, devices:list=None,*args,**kwargs) -> list:
   '''
   Lädt sensoreninstanzen in eine Liste.
   '''
-  def import_from_path(name:str,path:str):
-    spec = importlib.util.spec_from_file_location(name, path)
-    driver = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(driver)
-    return driver
-
   def multi_import(sources:dict,mode:str=mode):
     drivers = [import_from_path(name,source['path']) for name, source in sources.items()]
     return [getattr(driver, mode) for driver in drivers]
@@ -79,6 +80,13 @@ def load_drivers(mode:str, devices:list=None,*args,**kwargs) -> list:
   drivers = multi_import(sources, mode)
   #sensors = [driver(*args,**kwargs) for driver in drivers]
   return drivers
+
+def load_driver(device:str, mode:str, *args,**kwargs):
+  source = get_driver_list([device])[device]
+  print(source)
+  driver = import_from_path(device, source['path'])
+  print(driver)
+  return getattr(driver, mode)
 
 ### FLASK ###
 
@@ -99,11 +107,15 @@ def update():
 def reboot():
   return exec_command('reboot')
 
-@app.route('/sensores/add', methods=['GET'])
+@app.route('/sensores', methods=['GET'])
 def detect_sensors():
-  kwargs = get_kwargs_from_request(request,"device")
-  new_sensors = load_drivers('/dev/ttyUSB0')
-  db.write('s1',new_sensors)
+  sensors = {}
+  for name, sensor in db.read_all().items():
+    sensors.update({name:{k:v for k, v in dict(sensor.__dict__).items() if isinstance(v,(int, str))}})
+  return jsonify(sensors)
+
+@app.route('/sensores/add', methods=['GET'])
+def add_sensors():
   return 
 
 @app.route('/sensores/drivers', methods=['GET'])
@@ -114,15 +126,16 @@ def show_drivers():
 
 @app.route('/sensores/measure', methods=['GET'])
 def get_measure():
-  ms = {s.device:s.measure() for s in sensors}
-  return ms
+  return
 
 if __name__ =='__main__':
   db = DB()
-  #s = RF603.Serial()#load_drivers('Serial',['RF603'])[0]('/dev/ttyUSB0')
+  print(db.read_all()['s'].__dict__)
+  #s = RF603.Serial('/dev/ttyUSB0')
+  #print(s.identify())
   #s.close()
-  #db.write('s',s)
-  ss:RF603.Serial = db.read('s')
+  #db.write('1',s)
+  ss = db.read('1')
   ss.open()
   print(ss.identify())
-  #app.run(host="0.0.0.0", debug=True)
+  app.run(host="0.0.0.0", debug=True)

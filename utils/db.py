@@ -18,7 +18,12 @@ class DB():
     with shelve.open(self.db_path) as db:
       payload = db[key]
     return payload
-  
+
+  def read_all(self) -> dict:
+    with shelve.open(self.db_path) as db:
+      payload = dict(db)
+    return payload
+
   def delete(self,key:str):
     with shelve.open(self.db_path) as db:
       del db[key]
