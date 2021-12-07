@@ -107,18 +107,51 @@ def update():
 def reboot():
   return exec_command('reboot')
 
-@app.route('/sensores', methods=['GET'])
-def detect_sensors():
-  sensors = {}
-  for name, sensor in db.read_all().items():
-    sensors.update({name:{k:v for k, v in dict(sensor.__dict__).items() if isinstance(v,(int, str))}})
-  return jsonify(sensors)
+@app.route('/sensores', methods=['GET','PUT','DELETE'])
+def sensors():
+  default = {
+    "name"  : "sensor",
+    "device": [
+      "RF603",
+      "OPT3"
+    ],
+    "port"  : "/dev/ttyUSB0",
+    "addr"  : 1
+  }
+  kwargs = dict(request.get_json())
+  
+  # GET
+  if request.method == 'GET':
+    if 'info' in request.args:
+      return jsonify({'massage':f'u need 2 PUT like this: {default}'}),200
+  
+    sensors = {}
+    for name, sensor in db.read_all().items():
+      sensors.update({name:{k:v for k, v in dict(sensor.__dict__).items() if isinstance(v,(int, str))}})
+    return jsonify(sensors)
+  
+  if request.method == 'DELETE':
+    if 'delete' in request.args and 'name' in kwargs:
+      name = kwargs['name']
+      db.delete(name)
+      return jsonify({'massage':f'{name} deleted'}), 200
+    return jsonify({'error':'send {name: ... } in body and "delete" as arg to delete something'}), 400
+  
+  # PUT
+  if request.method == 'PUT':    
+    if not all(e in kwargs for e in default):
+      return jsonify({'error':f'you need all of these params: {default}'}),400
+    
+    params = default | kwargs
+    if params['device'] == 'RF603':
+      s = RF603.Serial(params['port'])
+      ident = s.identify()
+      s.close()
+      db.write(params['name'],s)
+      return jsonify(ident),200
+  return jsonify(kwargs),200 
 
-@app.route('/sensores/add', methods=['GET'])
-def add_sensors():
-  return 
-
-@app.route('/sensores/drivers', methods=['GET'])
+@app.route('/drivers', methods=['GET'])
 def show_drivers():
   kwargs = get_kwargs_from_request(request,"device")
   drivers = get_driver_list(kwargs["device"])
@@ -130,12 +163,4 @@ def get_measure():
 
 if __name__ =='__main__':
   db = DB()
-  print(db.read_all()['s'].__dict__)
-  #s = RF603.Serial('/dev/ttyUSB0')
-  #print(s.identify())
-  #s.close()
-  #db.write('1',s)
-  ss = db.read('1')
-  ss.open()
-  print(ss.identify())
   app.run(host="0.0.0.0", debug=True)
