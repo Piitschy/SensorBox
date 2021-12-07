@@ -157,9 +157,17 @@ def show_drivers():
   drivers = get_driver_list(kwargs["device"])
   return drivers
 
-@app.route('/sensores/measure', methods=['GET'])
-def get_measure():
-  return
+@app.route('/measure/<name>', methods=['GET'])
+def get_measure(name):
+  s = db.read(name)
+  s.open()
+  result = s.measure()
+  s.close()
+  return jsonify(result), 200
+
+@app.route('/start_measure/<name>', methods=['GET'])
+def start_measure(name):
+  pass
 
 if __name__ =='__main__':
   db = DB()
