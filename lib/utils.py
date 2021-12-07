@@ -184,8 +184,8 @@ class MultiProc:
                 del self.procs[i]
         return
 
-    def _worker(self, id, proc, *args, **kwargs):
-        self.return_dict.update({id: proc(*args, **kwargs)})
+    def _worker(self, ID, proc, *args, **kwargs):
+        self.return_dict.update({ID: proc(*args, **kwargs)})
         return
 
     def start(self) -> None:
