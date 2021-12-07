@@ -167,15 +167,43 @@ def get_measure(name):
   s.close()
   return jsonify(result), 200
 
-@app.route('/start_measure/<name>', methods=['GET'])
-def start_measure(name):
+@app.route('/start_measure/<senor_name>', methods=['GET'])
+def start_measure(senor_name):
   rate = int(request.args.get('rate') or 1)
   duration = float(request.args.get('duration') or 10.0)
+  meas_name = str(request.args.get('name') or senor_name+'_meas')
+ 
+  #pool = MultiProc()
+  #pool.add_process(
+  #  function=messung.start,
+  #  rate=rate,
+  #  duration=duration,
+  #  name=meas_name,
+  #  db=db
+  #)
+  #pool.start()
   
-  s = db.read(name)
+  s = db.read(senor_name)
   messung = Measurement(s)
-  result = messung.start(rate,duration)
+  result = messung.start(
+    rate=rate,
+    duration=duration,
+    name=meas_name,
+    db=db
+  )
+  return jsonify({
+    'massage':f'measure "{meas_name}" successfull',
+    'data': result
+  }), 200
+
+@app.route('/measurement/<name>', methods=['GET'])
+def load_measurement(name):
+  try:
+    result = db.read(name)
+  except KeyError:
+    return jsonify({'message': 'unknown measurement'}), 404
   return jsonify(result), 200
+
 
 if __name__ =='__main__':
   db = DB(DB_PATH)
