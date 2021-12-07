@@ -18,7 +18,7 @@ GIT_DIR = GIT_PATH.split(path.sep)[-1]
 DRIVER_LOCATIONS_PATH = './utils/driver_locations.json5'
 CONFIG_PATH = './utils/config.json5'
 
-DB_PATH = './var/db_sensors'
+DB_SENS_PATH = './var/db_sensors'
 DB_MEAS_PATH = './var/db_measurements'
 
 ### ENV ###
@@ -134,14 +134,14 @@ def sensors():
       }),200
 
     sensors = {}
-    for name, sensor in db.read_all().items():
+    for name, sensor in db_sens.read_all().items():
       sensors.update({name:{k:v for k, v in dict(sensor.__dict__).items() if isinstance(v,(int, str))}})
     return jsonify(sensors)
   
   if request.method == 'DELETE':
     if 'delete' in request.args and 'name' in kwargs:
       name = kwargs['name']
-      db.delete(name)
+      db_sens.delete(name)
       return jsonify({'massage':f'{name} deleted'}), 200
     return jsonify({'error':'send {name: ... } in body and "delete" as arg to delete something'}), 400
   
@@ -155,7 +155,7 @@ def sensors():
       s = RF603.Serial(params['port'])
       ident = s.identify()
       s.close()
-      db.write(params['name'],s)
+      db_sens.write(params['name'],s)
       return jsonify(ident),200
   return jsonify(kwargs),200 
 
@@ -167,7 +167,7 @@ def show_drivers():
 
 @app.route('/measure/<name>', methods=['GET'])
 def get_measure(name):
-  s = db.read(name)
+  s = db_sens.read(name)
   s.open()
   result = s.measure()
   s.close()
@@ -186,7 +186,10 @@ def schedule():
     "delay" : 0
   }
   kwargs = dict(request.get_json())
-
+  schedule_keys = ['id']+list(default.keys())
+  schedules = [{ k: p['kwargs'][k] for k in schedule_keys if k in p['kwargs'] } for p in pool.procs]
+  schedule_ids = [p['id'] for p in pool.procs]
+  
   # GET
   if request.method == 'GET':
     if 'info' in request.args:
@@ -194,28 +197,36 @@ def schedule():
         'massage':f'u need 2 PUT like the default',
         'default': default
       }),200
-
+    return jsonify({'data':schedules}), 200
+  
   # PUT
   if request.method == 'PUT':
     if not all(e in kwargs for e in default):
       return jsonify({'error':f'you need all of these params: {default}'}),400
     
     params = default | kwargs
-
-    s = db.read(params['senor_name'])
+    
+    sName = params['senor_name']
+    if sName in schedule_ids:
+      pool.delete_process(sName)
+    if sName not in db_sens.read_all():
+      return jsonify({'error':'sensor not found'})
+    
+    s = db_sens.read(params['senor_name'])
     messung = Measurement(s)
 
     pool.add_process(
       function=messung.start,
+      id=sName,
       rate=params['rate'],
       duration=params['duration'],
-      name=params['meas_name'],
-      db=params['db_meas']
+      name=params['name'],
+      db=db_meas
     )
     
     return jsonify({
-      'massage':f'measure "{params["meas_name"]}" successfull',
-      'data': None
+      'massage':f'scheduled "{params["name"]}" successfull',
+      'data': params
     }), 200
 
 @app.route('/schedule/start', methods=['GET'])
@@ -241,7 +252,7 @@ def load_measurement(name):
   }), 200
 
 if __name__ =='__main__':
-  db = DB(DB_PATH)
+  db_sens = DB(DB_SENS_PATH)
   db_meas = DB(DB_MEAS_PATH)
   pool = MultiProc()
   app.run(host="0.0.0.0", debug=True)

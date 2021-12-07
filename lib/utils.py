@@ -167,7 +167,7 @@ class MultiProc:
         Args:
             function (func,dict(func)): Funktion oder Dict von Funktionen
         """
-        id = None
+        id = kwargs['id'] if 'id' in kwargs else None
         if type(function) is dict:
             (id, function) = list(function.items())[0]
         p = {
@@ -177,6 +177,12 @@ class MultiProc:
             'kwargs': kwargs
         }
         self.append_processes([p])
+
+    def delete_process(self,id):
+        for i, p in enumerate(self.procs):
+            if p['id'] == id:
+                del self.procs[i]
+        return
 
     def _worker(self, id, proc, *args, **kwargs):
         self.return_dict.update({id: proc(*args, **kwargs)})
