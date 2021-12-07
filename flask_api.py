@@ -7,8 +7,7 @@ import os.path as path
 import sys
 from dotenv import load_dotenv
 import importlib.util
-from utils.utils import DB, MultiProc
-from utils.confdict import conf
+from utils.utils import DB, MultiProc, conf
 
 ### CONST ###
 
