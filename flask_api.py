@@ -8,6 +8,7 @@ import sys
 from dotenv import load_dotenv
 import importlib.util
 from lib.utils import DB, MultiProc, conf
+from lib.measurement import Measurement
 
 ### CONST ###
 
@@ -168,7 +169,13 @@ def get_measure(name):
 
 @app.route('/start_measure/<name>', methods=['GET'])
 def start_measure(name):
-  pass
+  rate = int(request.args.get('rate') or 1)
+  duration = float(request.args.get('duration') or 10.0)
+  
+  s = db.read(name)
+  messung = Measurement(s)
+  result = messung.start(rate,duration)
+  return jsonify(result), 200
 
 if __name__ =='__main__':
   db = DB(DB_PATH)
