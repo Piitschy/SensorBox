@@ -18,7 +18,8 @@ GIT_DIR = GIT_PATH.split(path.sep)[-1]
 DRIVER_LOCATIONS_PATH = './utils/driver_locations.json5'
 CONFIG_PATH = './utils/config.json5'
 
-DB_PATH = './var/flask_db'
+DB_PATH = './var/db_sensors'
+DB_MEAS_PATH = './var/db_measurements'
 
 ### ENV ###
 
@@ -207,4 +208,5 @@ def load_measurement(name):
 
 if __name__ =='__main__':
   db = DB(DB_PATH)
+  db_meas = DB(DB_MEAS_PATH)
   app.run(host="0.0.0.0", debug=True)
