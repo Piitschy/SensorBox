@@ -205,7 +205,6 @@ def load_measurement(name):
     return jsonify({'message': 'unknown measurement'}), 404
   return jsonify(result), 200
 
-
 if __name__ =='__main__':
   db = DB(DB_PATH)
   db_meas = DB(DB_MEAS_PATH)
