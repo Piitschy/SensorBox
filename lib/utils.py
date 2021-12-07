@@ -1,5 +1,6 @@
 import shelve, json
 from multiprocessing import Manager, Process
+from time import sleep
 
 
 ### DATABASE ###
@@ -120,6 +121,7 @@ class MultiProc:
                         ...
                     ]
         """
+        self.running = False
         self.manager = Manager()
         self.return_dict = self.manager.dict()
         self.jobs = []
@@ -207,5 +209,10 @@ class MultiProc:
         Returns:
             list: Liste aller Prozess-returns
         """
+        while self.running:
+            sleep(0.1)
+        self.running = True
         self.start()
-        return self.join()
+        result =self.join()
+        self.running = False
+        return result

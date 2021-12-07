@@ -91,6 +91,8 @@ def load_driver(device:str, mode:str, *args,**kwargs):
   print(driver)
   return getattr(driver, mode)
 
+  # ROUTE FUNCTS
+  
 ### FLASK ###
 
 app = Flask(__name__)
@@ -126,8 +128,11 @@ def sensors():
   # GET
   if request.method == 'GET':
     if 'info' in request.args:
-      return jsonify({'massage':f'u need 2 PUT like this: {default}'}),200
-  
+      return jsonify({
+        'massage':f'u need 2 PUT like the default',
+        'default': default
+      }),200
+
     sensors = {}
     for name, sensor in db.read_all().items():
       sensors.update({name:{k:v for k, v in dict(sensor.__dict__).items() if isinstance(v,(int, str))}})
@@ -170,34 +175,53 @@ def get_measure(name):
     'data' : result
   }), 200
 
-@app.route('/start_measure/<senor_name>', methods=['GET'])
-def start_measure(senor_name):
-  rate = int(request.args.get('rate') or 1)
-  duration = float(request.args.get('duration') or 10.0)
-  meas_name = str(request.args.get('name') or senor_name)
- 
-  #pool = MultiProc()
-  #pool.add_process(
-  #  function=messung.start,
-  #  rate=rate,
-  #  duration=duration,
-  #  name=meas_name,
-  #  db=db
-  #)
-  #pool.start()
-  
-  s = db.read(senor_name)
-  messung = Measurement(s)
-  result = messung.start(
-    rate=rate,
-    duration=duration,
-    name=meas_name,
-    db=db_meas
-  )
-  return jsonify({
-    'massage':f'measure "{meas_name}" successfull',
-    'data': result
-  }), 200
+@app.route('/schedule', methods=['GET','PUT','DELETE'])
+def schedule():
+  default = {
+    "name" : "measurement",
+    "senor_name"  : "sensor",
+    "rate": 1,
+    "duration": 10.0,
+    "start_time" : None,
+    "delay" : 0
+  }
+  kwargs = dict(request.get_json())
+
+  # GET
+  if request.method == 'GET':
+    if 'info' in request.args:
+      return jsonify({
+        'massage':f'u need 2 PUT like the default',
+        'default': default
+      }),200
+
+  # PUT
+  if request.method == 'PUT':
+    if not all(e in kwargs for e in default):
+      return jsonify({'error':f'you need all of these params: {default}'}),400
+    
+    params = default | kwargs
+
+    s = db.read(params['senor_name'])
+    messung = Measurement(s)
+
+    pool.add_process(
+      function=messung.start,
+      rate=params['rate'],
+      duration=params['duration'],
+      name=params['meas_name'],
+      db=params['db_meas']
+    )
+    
+    return jsonify({
+      'massage':f'measure "{params["meas_name"]}" successfull',
+      'data': None
+    }), 200
+
+@app.route('/schedule/start', methods=['GET'])
+def start_schedule():
+  result = pool.execute()
+  return jsonify({'data':result}), 200
 
 @app.route('/measurements', methods=['GET'])
 def load_measurements():
@@ -219,4 +243,5 @@ def load_measurement(name):
 if __name__ =='__main__':
   db = DB(DB_PATH)
   db_meas = DB(DB_MEAS_PATH)
+  pool = MultiProc()
   app.run(host="0.0.0.0", debug=True)

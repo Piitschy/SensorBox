@@ -12,6 +12,7 @@ class Measurement(object):
       meas.append(self.sensor.measure())
       sleep(1/rate)
     self.sensor.close()
+    sleep(0.3)
     if name and db:
       db.write(name,meas)
     return meas
