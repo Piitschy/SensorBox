@@ -2,13 +2,9 @@ import shelve, json
 from multiprocessing import Manager, Process
 
 
-DB_PATH = './utils/flask_db'
-
 ### DATABASE ###
-
-
 class DB():
-    def __init__(self, db_path: str = DB_PATH):
+    def __init__(self, db_path: str):
         self.db_path = db_path
         db = shelve.open(db_path)
         db.close()

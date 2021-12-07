@@ -7,7 +7,7 @@ import os.path as path
 import sys
 from dotenv import load_dotenv
 import importlib.util
-from utils.utils import DB, MultiProc, conf
+from lib.utils import DB, MultiProc, conf
 
 ### CONST ###
 
@@ -16,6 +16,8 @@ GIT_DIR = GIT_PATH.split(path.sep)[-1]
 
 DRIVER_LOCATIONS_PATH = './utils/driver_locations.json5'
 CONFIG_PATH = './utils/config.json5'
+
+DB_PATH = './var/flask_db'
 
 ### ENV ###
 
@@ -169,5 +171,5 @@ def start_measure(name):
   pass
 
 if __name__ =='__main__':
-  db = DB()
+  db = DB(DB_PATH)
   app.run(host="0.0.0.0", debug=True)
