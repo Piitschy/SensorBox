@@ -108,7 +108,7 @@ def update():
 def reboot():
   return exec_command('reboot')
 
-@app.route('/sensores', methods=['GET','PUT','DELETE'])
+@app.route('/sensors', methods=['GET','PUT','DELETE'])
 def sensors():
   default = {
     "name"  : "sensor",
