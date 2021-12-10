@@ -1,17 +1,16 @@
 <template>
-  <settings />
+  <Messung />
 </template>
 
 <script lang="ts">
   import Vue from 'vue'
-  import Settings from '../components/Settings.vue'
+  import Messung from '../components/Messung.vue'
 
   export default Vue.extend({
-    name: 'Settings',
+    name: 'Messungen',
 
     components: {
-      Settings,
+      Messung,
     },
-
   })
 </script>

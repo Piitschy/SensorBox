@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueRouter, { RouteConfig } from 'vue-router'
 import Dashboard from '../views/Dashboard.vue'
-import Settings from '../views/Settings.vue'
+import Messungen from '../views/Messungen.vue'
 
 Vue.use(VueRouter)
 
@@ -20,9 +20,9 @@ const routes: Array<RouteConfig> = [
     component: () => import(/* webpackChunkName: "sensors" */ '../views/Sensoren.vue')
   },
   {
-    path: '/settings',
-    name: 'Settings',
-    component: Settings,
+    path: '/messungen',
+    name: 'Messungen',
+    component: Messungen,
   }
 ]
 

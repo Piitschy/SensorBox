@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-row class="text-center">
-      Settings
+      Messung
       <!-- -->
     </v-row>
   </v-container>
@@ -11,10 +11,14 @@
   import Vue from 'vue'
 
   export default Vue.extend({
-    name: 'Settings',
-
-    data: () => ({
-      
-    }),
+    name: 'Messung',
+    props: {
+      name: {
+        type: String,
+        default: "Messung"
+      },
+      data: {
+      }
+    }
   })
 </script>
