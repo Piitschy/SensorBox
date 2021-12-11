@@ -1,100 +1,192 @@
-
-  
 <template>
-  <v-app id="inspire">
-    <v-app-bar
-      app
-      color="white"
-      flat
-    >
-      <v-container class="py-0 fill-height">
-        <v-avatar
-          class="mr-10"
-          color="grey darken-1"
-          size="32"
-        ></v-avatar>
-
-        <v-btn
-          v-for="route in routes"
-          :key="route.path"
-          :to="route"
-          text
+  <v-app>
+    <Notification />
+        <v-navigation-drawer
+          v-model="drawer"
+          app
+          color="grey darken-2"
+          dark
         >
-          {{ route.name }}
-        </v-btn>
+        <v-list-item>
+          <v-list-item-content>
+            <v-list-item-title class="title">
+              {{ $route.name }}
+            </v-list-item-title>
+            <v-list-item-subtitle>
+              Bitte auswählen
+            </v-list-item-subtitle>
+          </v-list-item-content>
+      </v-list-item>
 
-        <v-spacer></v-spacer>
+      <v-divider></v-divider>
 
-        <v-responsive max-width="260">
-          <v-text-field
-            dense
-            flat
-            hide-details
-            rounded
-            solo-inverted
-          ></v-text-field>
-        </v-responsive>
-      </v-container>
+      <v-list
+        dense
+        nav
+      >
+        <v-list-item v-for="route in routes" :key="route.path" :to="route">
+          <v-list-item-icon>
+            <v-icon>{{ route.icon }}</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-title>{{ route.name }}</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
+    </v-navigation-drawer>
+
+    <v-app-bar app color="grey darken-4" dark>
+      <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
+      <v-spacer />
+      <v-toolbar-title v-if="!drawer">{{ $route.name }}</v-toolbar-title>
+      <v-spacer />
+      <span v-if="pwa">
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn  v-bind="attrs" v-on="on" icon @click="install"><v-icon>mdi-download</v-icon></v-btn>
+          </template>
+          <span>installieren</span>
+        </v-tooltip>
+      </span>
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn icon v-bind="attrs" v-on="on" @click="infoSheet = true">
+            <v-icon>mdi-information</v-icon>
+          </v-btn>
+        </template>
+        <span>Info</span>
+      </v-tooltip>
     </v-app-bar>
-
-    <v-main class="grey lighten-3">
-      <v-container>
-        <v-row>
-          <v-col cols="2">
-            <v-sheet rounded="lg">
-              <v-list color="transparent">
-                <v-list-item
-                  v-for="n in 5"
-                  :key="n"
-                  link
-                >
-                  <v-list-item-content>
-                    <v-list-item-title>
-                      List Item {{ n }}
-                    </v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-
-                <v-divider class="my-2"></v-divider>
-
-                <v-list-item
-                  link
-                  color="grey lighten-4"
-                >
-                  <v-list-item-content>
-                    <v-list-item-title>
-                      Refresh
-                    </v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-              </v-list>
-            </v-sheet>
-          </v-col>
-
-          <v-col>
-            <v-sheet
-              min-height="70vh"
-              rounded="lg"
-            >
-              <!--  -->
-              <router-view></router-view>
-            </v-sheet>
-          </v-col>
-        </v-row>
-      </v-container>
+    <v-main>
+      <router-view></router-view>
     </v-main>
+    <v-bottom-sheet v-model="infoSheet">
+      <v-sheet
+        class="text-center"
+      >
+        <div class="py-4">
+          <div class="py-4" v-if="pwa">
+            <v-btn @click="install" color="info"><v-icon>mdi-download</v-icon> installieren</v-btn>
+          </div>
+          {{$route.meta.description.text}}
+        </div>
+      </v-sheet>
+    </v-bottom-sheet>
+    <!--
+    <v-footer app>
+    </v-footer>
+    -->
   </v-app>
 </template>
 
 <script>
-  export default {
-    data: () => ({
-      
-    }),
-    computed: {
+import Notification from '@/components/Notification.vue'
+
+export default {
+  name: 'App',
+  components: {
+    Notification
+  },
+  data: () => ({
+    drawer: false,
+    infoSheet: false,
+    pwa: null
+  }),
+  computed: {
     routes () {
       return this.$router.options.routes.filter(route => !route.meta || !route.meta.hidden)
-    },
+    }
+  },
+  methods: {
+    async install () {
+      this.pwa.prompt()
+    }
+  },
+  created () {
+    // PWA INSTALL
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault()
+      // Stash the event so it can be triggered later.
+      this.pwa = e
+    })
+    window.addEventListener('appinstalled', () => {
+      this.pwa = null
+    })
+    // iOS
+    // Detects if device is on iOS
+    const isIos = () => {
+      const userAgent = window.navigator.userAgent.toLowerCase()
+      return /iphone|ipad|ipod/.test(userAgent)
+    }
+    // Detects if device is in standalone mode
+    const isInStandaloneMode = () => ('standalone' in window.navigator) && (window.navigator.standalone)
+
+    // Checks if should display install popup notification:
+    if (isIos() && !isInStandaloneMode()) {
+      this.setState({ showInstallMessage: true })
     }
   }
+}
 </script>
+
+<style>
+.icon {
+  /*background: url('assets/logo.png');*/
+  height: 20px;
+  width: 20px;
+  display: block;
+  /* Other styles here */
+}
+
+.ribbon-wrapper-green {
+  width: 85px;
+  height: 88px;
+  overflow: hidden;
+  position: fixed;
+  top: 56px;
+  right: -1px;
+  z-index: 1;
+}
+
+.ribbon-green {
+  font: bold 15px Sans-Serif;
+  color: #333;
+  text-align: center;
+  text-shadow: rgba(255,255,255,0.5) 0px 1px 0px;
+    -webkit-transform: rotate(45deg);
+    -moz-transform:    rotate(45deg);
+    -ms-transform:     rotate(45deg);
+    -o-transform:      rotate(45deg);
+  position: relative;
+  padding: 7px 0;
+  left: -5px;
+  top: 15px;
+  width: 120px;
+  background-color: #BFDC7A;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#BFDC7A), to(#8EBF45));
+  background-image: -webkit-linear-gradient(top, #BFDC7A, #8EBF45);
+  background-image:    -moz-linear-gradient(top, #BFDC7A, #8EBF45);
+  background-image:     -ms-linear-gradient(top, #BFDC7A, #8EBF45);
+  background-image:      -o-linear-gradient(top, #BFDC7A, #8EBF45);
+  color: #6a6340;
+  -webkit-box-shadow: 0px 0px 3px rgba(0,0,0,0.3);
+  -moz-box-shadow:    0px 0px 3px rgba(0,0,0,0.3);
+  box-shadow:         0px 0px 3px rgba(0,0,0,0.3);
+}
+
+.ribbon-green:before, .ribbon-green:after {
+  content: "";
+  border-top:   3px solid #6e8900;
+  border-left:  3px solid transparent;
+  border-right: 3px solid transparent;
+  position:absolute;
+  bottom: -3px;
+}
+
+.ribbon-green:before {
+  left: 0;
+}
+.ribbon-green:after {
+  right: 0;
+}
+</style>
