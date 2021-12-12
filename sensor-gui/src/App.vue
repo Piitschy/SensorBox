@@ -57,9 +57,13 @@
         <span>Info</span>
       </v-tooltip>
     </v-app-bar>
+
     <v-main>
-      <router-view></router-view>
+      <div class="px-8 py-4">
+        <router-view></router-view>
+      </div>
     </v-main>
+
     <v-bottom-sheet v-model="infoSheet">
       <v-sheet
         class="text-center"
