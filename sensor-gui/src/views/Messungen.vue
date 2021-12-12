@@ -1,4 +1,6 @@
 <template>
+<div>
+  {{measurements}}
   <v-data-table
     :headers="headers"
     :items="desserts"
@@ -6,6 +8,7 @@
     class="elevation-1"
   ></v-data-table>
   <!--<Messung />-->
+</div>
 </template>
 
 <script lang="ts">
@@ -24,6 +27,7 @@
           {text: 'Namen', value: 'name'},
           {text: 'Kalorien', value: 'calories'}
         ],
+        measurements: [],
         desserts: [
           {
             name: 'Frozen Yogurt',
@@ -42,7 +46,14 @@
     },
 
     methods: {
+      async getData() {
+        const response = await fetch('http://192.168.1.104:5000/measurements')
+        this.measurements = response.json()
+      }
+    },
 
+    async mounted() {
+      await this.getData()
     }
 
   })

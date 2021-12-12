@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 import importlib.util
 from lib.utils import DB, MultiProc, conf
 from lib.measurement import Measurement
+from flask_cors import CORS
 
 ### CONST ###
 
@@ -96,6 +97,7 @@ def load_driver(device:str, mode:str, *args,**kwargs):
 ### FLASK ###
 
 app = Flask(__name__)
+CORS(app)
 
 @app.route('/', methods=['GET'])
 def home():
