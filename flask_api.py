@@ -183,9 +183,10 @@ def schedule():
     "rate": 1,
     "duration": 10.0,
     "start_time" : None,
-    "delay" : 0
+    "delay" : 0,
+    "demo": True
   }
-  kwargs = dict(request.get_json())
+  kwargs = dict(request.get_json() or {})
   schedule_keys = ['id']+list(default.keys())
   schedules = [{ k: p['kwargs'][k] for k in schedule_keys if k in p['kwargs'] } for p in pool.procs]
   schedule_ids = [p['id'] for p in pool.procs]
@@ -221,7 +222,8 @@ def schedule():
       rate=params['rate'],
       duration=params['duration'],
       name=params['name'],
-      db=db_meas
+      db=db_meas,
+      demo=params['demo']
     )
     
     return jsonify({
