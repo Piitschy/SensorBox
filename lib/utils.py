@@ -167,7 +167,7 @@ class MultiProc:
         Args:
             function (func,dict(func)): Funktion oder Dict von Funktionen
         """
-        id = kwargs['id'] if 'id' in kwargs else None
+        id = None#kwargs['id'] if 'id' in kwargs else None
         if type(function) is dict:
             (id, function) = list(function.items())[0]
         p = {
@@ -184,8 +184,8 @@ class MultiProc:
                 del self.procs[i]
         return
 
-    def _worker(self, ID, proc, *args, **kwargs):
-        self.return_dict.update({ID: proc(*args, **kwargs)})
+    def _worker(self, id, proc, *args, **kwargs):
+        self.return_dict.update({id: proc(*args, **kwargs)})
         return
 
     def start(self) -> None:

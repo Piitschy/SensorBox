@@ -218,7 +218,7 @@ def schedule():
 
     pool.add_process(
       function=messung.start,
-      id=sName,
+      #id=sName,
       rate=params['rate'],
       duration=params['duration'],
       name=params['name'],
