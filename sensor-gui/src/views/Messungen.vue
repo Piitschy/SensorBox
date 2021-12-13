@@ -1,17 +1,31 @@
 <template>
 <div>
-  {{measurements}}
-  <v-data-table
-    :headers="headers"
-    :items="desserts"
-    :items-per-page="15"
-    class="elevation-1"
-  ></v-data-table>
-  <!--<Messung />-->
+  <v-card>
+    {{measurements}}
+    <v-card-title>
+      <v-text-field
+        v-model="search"
+        append-icon="mdi-magnify"
+        label="Suche nach Messdaten"
+        single-line
+        hide-details
+      ></v-text-field>
+    </v-card-title>
+    <v-data-table
+      :headers="headers"
+      :items="measurements"
+      :items-per-page="15"
+      :search="search"
+      :loading="loading"
+      class="elevation-1"
+      @click:row="click_on_row"
+    ></v-data-table>
+    <!--<Messung />-->
+  </v-card>
 </div>
 </template>
 
-<script lang="ts">
+<script>
   import Vue from 'vue'
   //import Messung from '../components/Messung.vue'
 
@@ -23,21 +37,18 @@
     },
     data: () => {
       return {
+        search: '',
+        loading: false,
+        clickedItem: 'nix',
         headers: [
           {text: 'Namen', value: 'name'},
-          {text: 'Kalorien', value: 'calories'}
+          {text: 'Sensor', value: 'sensor'},
+          {text: 'Dauer [s]', value: 'duration'},
+          {text: 'Rate [Hz]', value: 'rate'},
+          {text: 'Datum', value: 'start_date'},
+          {text: 'Zeit', value: 'start_time'},
         ],
         measurements: [],
-        desserts: [
-          {
-            name: 'Frozen Yogurt',
-            calories: 159,
-          },
-          {
-            name: 'Ice cream sandwich',
-            calories: 237,
-          }
-        ],
       }
     },
 
@@ -47,13 +58,20 @@
 
     methods: {
       async getData() {
+        this.loading = true
         const response = await fetch('http://192.168.1.104:5000/measurements')
-        this.measurements = response.json()
+        const json = await response.json()
+        const result = Object.keys(json.data).map(id => Object.assign({id:id},json.data[id]))
+        this.loading = false
+        return result
+      },
+      click_on_row(item) {
+        this.clickedItem = item.name
       }
     },
 
     async mounted() {
-      await this.getData()
+      this. measurements = await this.getData()
     }
 
   })
