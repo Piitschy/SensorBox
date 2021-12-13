@@ -1,5 +1,10 @@
 <template>
 <div>
+  <v-overlay :value="selectedItem">
+    <v-card width="100%" height="600px" class="pa-4">
+      {{selectedItem}}
+    </v-card>
+  </v-overlay>
   <v-card>
     {{measurements}}
     <v-card-title>
@@ -39,7 +44,7 @@
       return {
         search: '',
         loading: false,
-        clickedItem: 'nix',
+        selectedItem: null,
         headers: [
           {text: 'Namen', value: 'name'},
           {text: 'Sensor', value: 'sensor'},
@@ -66,7 +71,7 @@
         return result
       },
       click_on_row(item) {
-        this.clickedItem = item.name
+        this.selectedItem = item.id
       }
     },
 
