@@ -245,10 +245,10 @@ def load_measurements():
     'data' : result
   }), 200
 
-@app.route('/measurements/<name>', methods=['GET'])
-def load_measurement(name):
+@app.route('/measurements/<id>', methods=['GET'])
+def load_measurement(id):
   try:
-    result = db_meas.read(name)
+    result = db_meas.read(id)
   except KeyError:
     return jsonify({'error': 'unknown measurement'}), 404
   return jsonify({
