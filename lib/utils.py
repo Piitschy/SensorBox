@@ -20,15 +20,21 @@ class DB():
             payload = db[key]
         return payload
 
-    def read_all(self) -> dict:
+    def read_all(self, without_data:bool = False) -> dict:
         with shelve.open(self.db_path) as db:
-            payload = dict(db)
+            payload:dict = dict(db)
+        if without_data:
+            payload = self._filter(payload,'data')
         return payload
 
     def delete(self, key: str):
         with shelve.open(self.db_path) as db:
             del db[key]
         return True
+    
+    def _filter(self,d:dict,*args:str) -> dict:
+        [[dataset.pop(arg) for arg in args] for dataset in d.values()]
+        return d
 
 class conf(dict):
     def __init__(self, path: str = None, *args, **kwargs):

@@ -240,7 +240,8 @@ def start_schedule():
 
 @app.route('/measurements', methods=['GET'])
 def load_measurements():
-  result = db_meas.read_all()
+  without_data = 'with_data' not in request.args
+  result = db_meas.read_all(without_data)
   return jsonify({
     'data' : result
   }), 200
