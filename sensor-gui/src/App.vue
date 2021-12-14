@@ -72,7 +72,7 @@
           <div class="py-4" v-if="pwa">
             <v-btn @click="install" color="info"><v-icon>mdi-download</v-icon> installieren</v-btn>
           </div>
-          {{$route.meta.description.text}}
+          <!--{{$route.meta.description.text}}-->
         </div>
       </v-sheet>
     </v-bottom-sheet>

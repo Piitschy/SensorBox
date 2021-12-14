@@ -36,7 +36,14 @@ const routes: Array<RouteConfig> = [
       description: {
         text: 'Hallo, ich bin Jans Messtool. \nIch kann dir helfen Smaps automatisiert zu bearbeiten. \nBedenke, dass ich noch ein Prototyp bin...'
       }
-    }
+    },
+    children: [
+      {
+        path: ':id',
+        name: 'Messung',
+        component: () => import(/* webpackChunkName: "measurement" */ '@/components/Messung.vue')
+      }
+    ]
   }
 ]
 

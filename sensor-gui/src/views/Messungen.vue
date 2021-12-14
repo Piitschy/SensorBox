@@ -1,29 +1,14 @@
 <template>
   <div>
     <v-dialog
-        transition="dialog-top-transition"
         max-width="600"
         :value="dialog"
         v-if="dialog"
+        persistent
       >
-        <template>
-          <v-card>
-            <v-toolbar>
-               <p>{{selectedItem.name}}</p>
-               <p class="text-right">{{selectedItem.start_date}}</p>
-            </v-toolbar>
-            {{measurements}}
-            <v-card-actions class="justify-end">
-              <v-btn
-                text
-                @click="dialog = false"
-              >Schließen</v-btn>
-            </v-card-actions>
-          </v-card>
-        </template>
+        <router-view></router-view>
       </v-dialog>
     <v-card>
-      
       <v-card-title>
         <v-text-field
           v-model="search"
@@ -49,6 +34,7 @@
 
 <script>
   import Vue from 'vue'
+  import { mapState, mapActions } from 'vuex'
   //import Messung from '../components/Messung.vue'
 
   export default Vue.extend({
@@ -60,42 +46,34 @@
     data: () => {
       return {
         search: '',
-        loading: false,
-        dialog: false,
-        selectedItem: null,
-        headers: [
-          {text: 'Namen', value: 'name'},
-          {text: 'Sensor', value: 'sensor'},
-          {text: 'Dauer [s]', value: 'duration'},
-          {text: 'Rate [Hz]', value: 'rate'},
-          {text: 'Datum', value: 'start_date'},
-          {text: 'Zeit', value: 'start_time'},
-        ],
+        selectedItem: {
+          name: ''
+        },
         measurements: [],
       }
     },
 
     computed: {
-
+      ...mapState(['loading','headers']),
+      dialog() {
+        return this.$route.name != 'Messungen'
+      }
     },
 
     methods: {
-      async getData() {
-        this.loading = true
-        const response = await fetch('http://192.168.1.104:5000/measurements')
-        const json = await response.json()
-        const result = Object.keys(json.data).map(id => Object.assign({id:id},json.data[id]))
-        this.loading = false
-        return result
-      },
+      ...mapActions(['getData']),
       click_on_row(item) {
         this.selectedItem = item
-        this.dialog = true
+        this.$router.push({ name: 'Messung', params: { id: item.id }})
+      },
+      async get_and_transform_data(route) {
+        const data = await this.getData(route)
+        return Object.keys(data).map(id => Object.assign({id:id},data[id]))
       }
     },
 
     async mounted() {
-      this. measurements = await this.getData()
+      this. measurements = await this.get_and_transform_data('measurements')
     }
   })
 </script>

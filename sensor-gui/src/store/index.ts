@@ -5,10 +5,35 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    baseUrl: 'http://192.168.1.104:8080/',
+    apiUrl: 'http://192.168.1.104:5000/',
+    loading: false,
+    headers: [
+      {text: 'Name', value: 'name'},
+      {text: 'Sensor', value: 'sensor'},
+      {text: 'Dauer [s]', value: 'duration'},
+      {text: 'Rate [Hz]', value: 'rate'},
+      {text: 'Datum', value: 'start_date'},
+      {text: 'Zeit', value: 'start_time'},
+    ]
   },
   mutations: {
+    startLoading(state) {
+      state.loading = true
+    },
+    stopLoading(state) {
+      state.loading = false
+    },
   },
   actions: {
+    async getData(context, route) {
+      context.commit('startLoading')
+      const response = await fetch(this.state.apiUrl+route)
+      const json = await response.json()
+      //const result = Object.keys(json.data).map(id => Object.assign({id:id},json.data[id]))
+      context.commit('stopLoading')
+      return json.data
+    },
   },
   modules: {
     notification: {
