@@ -10,7 +10,8 @@
       <v-spacer></v-spacer>
     </v-toolbar>
     <v-expand-transition>
-      <v-card-text class="pa-4" v-show="loaded">
+    <div v-show="loaded">
+      <v-card-text class="pa-4">
         <v-text-field
             v-for="value,key in itemExcept" :key="key"
             :label="getText(key)"
@@ -20,8 +21,7 @@
             outlined
           ></v-text-field>
       </v-card-text>
-    </v-expand-transition>
-    <v-card-actions class="justify-space-between">
+    <v-card-actions class="justify-end">
        <v-btn
         text
         :href="gotoApi()"
@@ -32,6 +32,13 @@
         @click="$router.go(-1)"
       >Schließen</v-btn>
     </v-card-actions>
+  </div>
+  </v-expand-transition>
+  <v-skeleton-loader
+    v-if="!loaded"
+    class="my-4"
+    type="list-item@8, actions"
+  />
   </v-card>
 </template>
 
