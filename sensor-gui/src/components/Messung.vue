@@ -3,19 +3,30 @@
     :loading="loading"
   >
     <v-toolbar>
-        {{item.name}}
+      <v-spacer></v-spacer>
+        <v-toolbar-title>
+          {{item.name}}
+        </v-toolbar-title>
+      <v-spacer></v-spacer>
     </v-toolbar>
     <v-expand-transition>
       <v-card-text class="pa-4" v-show="loaded">
-        <v-list-item v-for="value,key in item" :key="key">
-          <v-list-item-content>
-            <v-list-item-title>{{value}}</v-list-item-title>
-            <v-list-item-subtitle>{{getText(key)}}</v-list-item-subtitle>
-          </v-list-item-content>
-        </v-list-item>
+        <v-text-field
+            v-for="value,key in itemExcept" :key="key"
+            :label="getText(key)"
+            :value="value"
+            :disabled="value === null"
+            readonly
+            outlined
+          ></v-text-field>
       </v-card-text>
     </v-expand-transition>
-    <v-card-actions class="justify-end">
+    <v-card-actions class="justify-space-between">
+       <v-btn
+        text
+        :href="gotoApi()"
+        target="_blank"
+      >API call</v-btn>
       <v-btn
         text
         @click="$router.go(-1)"
@@ -32,6 +43,7 @@
     name: 'Messung',
     data: () =>{ 
       return {
+        apiRouteBase: 'measurements',
         loaded: false,
         item: {},
         except: [
@@ -41,8 +53,16 @@
     }},
     computed: {
       ...mapState(['loading','headers']),
+      apiRoute() {
+        return this.apiRouteBase+'/'+String(this.$route.params.id)
+      },
       itemExcept() {
-        return null // Hier weitermachen 
+        var newItem = {}
+        for (var e in this.item) {
+          if (this.except.indexOf(e) >= 0) continue
+          newItem[e] = this.item[e]
+        }
+        return newItem
       }
     },
     methods: {
@@ -53,11 +73,16 @@
         } catch (e) {
           return key
         }
+      },
+      gotoApi() {
+        const ref = this.$store.state.apiUrl+this.apiRoute
+        console.log(ref)
+        return ref
       }
     },
     async mounted() {
       this.loaded=false
-      this.item = await this.getData('measurements/'+String(this.$route.params.id))
+      this.item = await this.getData(this.apiRoute)
       this.loaded=true
     }
   })
