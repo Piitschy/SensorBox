@@ -177,7 +177,25 @@ def get_measure(name):
     'data' : result
   }), 200
 
-@app.route('/schedule', methods=['GET','PUT','DELETE'])
+@app.route('/measurements', methods=['GET'])
+def load_measurements():
+  without_data = 'with_data' not in request.args
+  result = db_meas.read_all(without_data)
+  return jsonify({
+    'data' : result
+  }), 200
+
+@app.route('/measurements/<id>', methods=['GET'])
+def load_measurement(id):
+  try:
+    result = db_meas.read(id)
+  except KeyError:
+    return jsonify({'error': 'unknown measurement'}), 404
+  return jsonify({
+    'data' : result
+  }), 200
+
+@app.route('/measurements/schedule', methods=['GET','PUT','DELETE'])
 def schedule():
   default = {
     "name" : "measurement",
@@ -233,28 +251,10 @@ def schedule():
       'data': params
     }), 200
 
-@app.route('/schedule/start', methods=['GET'])
+@app.route('/measurements/schedule/start', methods=['GET'])
 def start_schedule():
   result = pool.execute()
   return jsonify({'data':result}), 200
-
-@app.route('/measurements', methods=['GET'])
-def load_measurements():
-  without_data = 'with_data' not in request.args
-  result = db_meas.read_all(without_data)
-  return jsonify({
-    'data' : result
-  }), 200
-
-@app.route('/measurements/<id>', methods=['GET'])
-def load_measurement(id):
-  try:
-    result = db_meas.read(id)
-  except KeyError:
-    return jsonify({'error': 'unknown measurement'}), 404
-  return jsonify({
-    'data' : result
-  }), 200
 
 if __name__ =='__main__':
   db_sens = DB(DB_SENS_PATH)
