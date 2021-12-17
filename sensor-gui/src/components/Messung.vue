@@ -51,7 +51,7 @@
         apiRouteBase: 'measurements',
         loaded: false,
         item: {},
-        except: [
+        hide: [
           'data',
           'start'
         ]
@@ -64,7 +64,7 @@
       itemExcept() {
         var newItem = {}
         for (var e in this.item) {
-          if (this.except.indexOf(e) >= 0) continue
+          if (this.hide.indexOf(e) >= 0) continue
           newItem[e] = this.item[e]
         }
         return newItem
