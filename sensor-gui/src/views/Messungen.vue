@@ -14,9 +14,15 @@
           v-model="search"
           append-icon="mdi-magnify"
           label="Suche nach Messdaten"
-          single-line
           hide-details
         ></v-text-field>
+        <v-btn 
+          class="ml-4"
+          color="primary"
+          @click="$router.push({ name: 'NewMessung'})"
+        >
+          Neue Messung
+        </v-btn>
       </v-card-title>
       <v-data-table
         :headers="headers"
@@ -28,7 +34,6 @@
         class="elevation-1"
         @click:row="click_on_row"
       ></v-data-table>
-      <!--<Messung />-->
     </v-card>
   </div>
 </template>
@@ -36,14 +41,9 @@
 <script>
   import Vue from 'vue'
   import { mapState, mapActions } from 'vuex'
-  //import Messung from '../components/Messung.vue'
 
   export default Vue.extend({
-    //name: 'Messungen',
-
-    components: {
-      //Messung,
-    },
+    name: 'Messungen',
     data: () => {
       return {
         search: '',
@@ -70,6 +70,7 @@
       async get_and_transform_data(route) {
         const data = await this.getData(route)
         return Object.keys(data).map(id => Object.assign({id:id},data[id]))
+
       }
     },
 

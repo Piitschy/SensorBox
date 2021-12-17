@@ -5,8 +5,8 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    baseUrl: 'http://192.168.1.104:8080/',
-    apiUrl: 'http://192.168.1.104:5000/',
+    baseUrl: 'http://192.168.182.176:8080/',
+    apiUrl: 'http://192.168.182.176:5000/',
     loading: false,
     headers: [
       {text: 'Name', value: 'name'},

@@ -21,7 +21,7 @@ const routes: Array<RouteConfig> = [
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "sensors" */ '../views/Sensoren.vue'),
+    component: () => import(/* webpackChunkName: "sensors" */ '@/views/Sensoren.vue'),
     meta: {
       description: {
         text: 'Hallo, ich bin Jans Messtool. \nIch kann dir helfen Smaps automatisiert zu bearbeiten. \nBedenke, dass ich noch ein Prototyp bin...'
@@ -31,7 +31,7 @@ const routes: Array<RouteConfig> = [
   {
     path: '/messungen',
     name: 'Messungen',
-    component: () => import(/* webpackChunkName: "measurements" */ '../views/Messungen.vue'),
+    component: () => import(/* webpackChunkName: "measurements" */ '@/views/Messungen.vue'),
     meta: {
       description: {
         text: 'Hallo, ich bin Jans Messtool. \nIch kann dir helfen Smaps automatisiert zu bearbeiten. \nBedenke, dass ich noch ein Prototyp bin...'
@@ -42,6 +42,11 @@ const routes: Array<RouteConfig> = [
         path: ':id',
         name: 'Messung',
         component: () => import(/* webpackChunkName: "measurement" */ '@/components/Messung.vue')
+      },
+      {
+        path: 'schedule',
+        name: 'NewMessung',
+        component: () => import(/* webpackChunkName: "newMeasurement" */ '@/components/NewMessung.vue')
       }
     ]
   }
