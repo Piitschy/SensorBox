@@ -25,6 +25,10 @@
     <v-card-actions class="justify-end">
       <v-btn
         text
+        @click="putRequest"
+      >Senden</v-btn>
+      <v-btn
+        text
         @click="$router.go(-1)"
       >Schließen</v-btn>
     </v-card-actions>
@@ -58,6 +62,11 @@
       },
       sensorNames() {
         return this.sensors.map(e => e.name)
+      }
+    },
+    methods: {
+      putRequest() {
+        alert(JSON.stringify(this.request))
       }
     }
   })
