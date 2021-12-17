@@ -9,12 +9,15 @@ export default new Vuex.Store({
     apiUrl: 'http://192.168.182.176:5000/',
     loading: false,
     headers: [
-      {text: 'Name', value: 'name'},
-      {text: 'Sensor', value: 'sensor'},
-      {text: 'Dauer [s]', value: 'duration'},
-      {text: 'Rate [Hz]', value: 'rate'},
-      {text: 'Datum', value: 'start_date'},
-      {text: 'Zeit', value: 'start_time'}
+      {text: 'Name', value: 'name', type: 'sting'},
+      {text: 'Sensor', value: 'sensor', type: 'sting'},
+      {text: 'Dauer [s]', value: 'duration', type: 'number'},
+      {text: 'Rate [Hz]', value: 'rate', type: 'number'},
+      {text: 'Datum', value: 'start_date', type: 'sting'},
+      {text: 'Zeit', value: 'start_time', type: 'sting'}
+    ],
+    sensors: [
+      {name: 'RF603'}
     ]
   },
   mutations: {

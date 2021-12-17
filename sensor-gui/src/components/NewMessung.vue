@@ -5,16 +5,21 @@
     <v-toolbar>
       <v-spacer></v-spacer>
         <v-toolbar-title>
-          Neue Messung
+          Neue Messung planen
         </v-toolbar-title>
       <v-spacer></v-spacer>
     </v-toolbar>
       <v-card-text class="pa-4">
         <v-text-field
-            v-for="e in headersExcept" :key="e.value"
-            :label="e.text"
-            outlined
-          ></v-text-field>
+          v-for="h in usedHeaders" :key="h.value"
+          :label="h.text"
+          outlined
+        />
+        <v-checkbox
+          label="Demo"
+          :v-model="request.demo"
+        />
+        {{request}}
       </v-card-text>
     <v-card-actions class="justify-end">
       <v-btn
@@ -33,33 +38,26 @@
     name: 'Messung',
     data: () =>{ 
       return {
-        apiRouteBase: 'measurements',
-        item: {},
-        except: [
+        apiRoute: 'measurements/schedule',
+        request: {},
+        hide: [
           'start_date',
           'start_time'
         ]
     }},
     computed: {
-      ...mapState(['loading','headers']),
-      headersExcept() {
-        var newHeaders = []
-        for (var i in this.headers) {
-          console.log(this.headers[i])
-          if (this.except.includes(this.headers[i].value)) continue
-          newHeaders.push(this.headers[i])
+      ...mapState(['loading','headers','sensors']),
+      usedHeaders() {
+        var usedHeaders = []
+        for (let e of this.headers) {
+          if (this.hide.includes(e.value)) continue
+          usedHeaders.push(e)
         }
-        return newHeaders
+        return usedHeaders
+      },
+      sensorNames() {
+        return this.sensors.map(e => e.name)
       }
-    },
-    methods: {
-      getText(key) {
-        try {
-          return this.headers.find(e => e.value === key).text
-        } catch (e) {
-          return key
-        }
-      }
-    },
+    }
   })
 </script>
