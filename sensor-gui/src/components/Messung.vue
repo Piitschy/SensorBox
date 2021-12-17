@@ -9,7 +9,6 @@
         </v-toolbar-title>
       <v-spacer></v-spacer>
     </v-toolbar>
-    <v-expand-transition>
     <div v-show="loaded">
       <v-card-text class="pa-4">
         <v-text-field
@@ -33,7 +32,6 @@
       >Schließen</v-btn>
     </v-card-actions>
   </div>
-  </v-expand-transition>
   <v-skeleton-loader
     v-if="!loaded"
     class="my-4"

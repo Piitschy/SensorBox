@@ -24,6 +24,7 @@
         :items-per-page="15"
         :search="search"
         :loading="loading"
+        loading-text="Lade..."
         class="elevation-1"
         @click:row="click_on_row"
       ></v-data-table>
