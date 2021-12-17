@@ -12,13 +12,14 @@
       <v-card-text class="pa-4">
         <v-text-field
           v-for="h in usedHeaders" :key="h.value"
+          v-model="request[h.value]"
           :label="h.text"
           outlined
         />
         <v-checkbox
           label="Demo"
-          :v-model="request.demo"
-        />
+          v-model="request.demo"
+        ></v-checkbox>
         {{request}}
       </v-card-text>
     <v-card-actions class="justify-end">
@@ -49,7 +50,7 @@
       ...mapState(['loading','headers','sensors']),
       usedHeaders() {
         var usedHeaders = []
-        for (let e of this.headers) {
+        for (const e of this.headers) {
           if (this.hide.includes(e.value)) continue
           usedHeaders.push(e)
         }
