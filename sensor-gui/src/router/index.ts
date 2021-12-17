@@ -33,20 +33,27 @@ const routes: Array<RouteConfig> = [
     name: 'Messungen',
     component: () => import(/* webpackChunkName: "measurements" */ '@/views/Messungen.vue'),
     meta: {
+      headline: 'Messungen',
       description: {
         text: 'Hallo, ich bin Jans Messtool. \nIch kann dir helfen Smaps automatisiert zu bearbeiten. \nBedenke, dass ich noch ein Prototyp bin...'
       }
     },
     children: [
       {
-        path: ':id',
-        name: 'Messung',
-        component: () => import(/* webpackChunkName: "measurement" */ '@/components/Messung.vue')
-      },
-      {
         path: 'schedule',
         name: 'NewMessung',
+        meta: {
+          headline: 'Messungen'
+        },
         component: () => import(/* webpackChunkName: "newMeasurement" */ '@/components/NewMessung.vue')
+      },
+      {
+        path: ':id',
+        name: 'Messung',
+        meta: {
+          headline: 'Messungen'
+        },
+        component: () => import(/* webpackChunkName: "measurement" */ '@/components/Messung.vue')
       }
     ]
   }

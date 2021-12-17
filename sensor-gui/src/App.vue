@@ -10,7 +10,7 @@
         <v-list-item>
           <v-list-item-content>
             <v-list-item-title class="title">
-              {{ $route.name }}
+              {{ $route.meta.headline }}
             </v-list-item-title>
             <v-list-item-subtitle>
               Bitte auswählen
@@ -38,7 +38,7 @@
     <v-app-bar app color="grey darken-4" dark>
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
       <v-spacer />
-      <v-toolbar-title v-if="!drawer">{{ $route.name }}</v-toolbar-title>
+      <v-toolbar-title v-if="!drawer">{{ $route.meta.headline }}</v-toolbar-title>
       <v-spacer />
       <span v-if="pwa">
         <v-tooltip bottom>

@@ -9,13 +9,10 @@
         </v-toolbar-title>
       <v-spacer></v-spacer>
     </v-toolbar>
-    <div v-show="loaded">
-      {{itemExcept}}
       <v-card-text class="pa-4">
         <v-text-field
-            v-for="value,key in itemExcept" :key="key"
-            :label="getText(key)"
-            :value="value"
+            v-for="e in headersExcept" :key="e.value"
+            :label="e.text"
             outlined
           ></v-text-field>
       </v-card-text>
@@ -25,12 +22,6 @@
         @click="$router.go(-1)"
       >Schließen</v-btn>
     </v-card-actions>
-  </div>
-  <v-skeleton-loader
-    v-if="!loaded"
-    class="my-4"
-    type="list-item@6, actions"
-  />
   </v-card>
 </template>
 
@@ -43,24 +34,22 @@
     data: () =>{ 
       return {
         apiRouteBase: 'measurements',
-        loaded: true,
         item: {},
         except: [
-          'data',
-          'start',
           'start_date',
           'start_time'
         ]
     }},
     computed: {
       ...mapState(['loading','headers']),
-      itemExcept() {
-        var newItem = {}
-        for (var e in this.item) {
-          if (this.except.indexOf(e) >= 0) continue
-          newItem[e] = this.item[e]
+      headersExcept() {
+        var newHeaders = []
+        for (var i in this.headers) {
+          console.log(this.headers[i])
+          if (this.except.includes(this.headers[i].value)) continue
+          newHeaders.push(this.headers[i])
         }
-        return newItem
+        return newHeaders
       }
     },
     methods: {

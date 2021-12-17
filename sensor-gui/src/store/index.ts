@@ -14,7 +14,7 @@ export default new Vuex.Store({
       {text: 'Dauer [s]', value: 'duration'},
       {text: 'Rate [Hz]', value: 'rate'},
       {text: 'Datum', value: 'start_date'},
-      {text: 'Zeit', value: 'start_time'},
+      {text: 'Zeit', value: 'start_time'}
     ]
   },
   mutations: {
