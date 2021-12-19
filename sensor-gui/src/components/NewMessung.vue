@@ -5,7 +5,7 @@
       <v-toolbar-title> Neue Messung planen </v-toolbar-title>
       <v-spacer></v-spacer>
       <v-fab-transition>
-        <v-btn v-if="ready" color="red" fab dark left bottom absolute>
+        <v-btn v-if="ready" color="red" fab dark left small bottom absolute>
           <v-icon large>mdi-record-rec</v-icon>
         </v-btn>
       </v-fab-transition>
