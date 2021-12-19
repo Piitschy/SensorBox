@@ -69,13 +69,13 @@
       },
       async get_and_transform_data(route) {
         const data = await this.getData(route)
-        return Object.keys(data).map(id => Object.assign({id:id},data[id]))
-
+        const measurements = Object.keys(data).map(id => Object.assign({id:id},data[id]))
+        this.measurements = measurements
+        return measurements
       }
     },
-
-    async mounted() {
-      this. measurements = await this.get_and_transform_data('measurements')
+    created() {
+      this.get_and_transform_data('measurements')
     }
   })
 </script>
