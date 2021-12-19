@@ -4,13 +4,11 @@
       <v-spacer></v-spacer>
       <v-toolbar-title> Neue Messung planen </v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-fab-transition>
-        <v-btn v-if="ready" color="red" fab dark left small bottom absolute>
-          <v-icon large>mdi-record-rec</v-icon>
-        </v-btn>
-      </v-fab-transition>
+      
     </v-toolbar>
+
     <v-expand-transition>
+      
       <v-data-table
         v-if="ready"
         dense
@@ -20,6 +18,7 @@
         hide-default-footer
         class="ma-5 elevation-2"
       ></v-data-table>
+      
     </v-expand-transition>
     <v-card-text class="pa-4">
       <v-text-field
@@ -34,10 +33,17 @@
       />
       <v-checkbox label="Demo" v-model="body.demo"></v-checkbox>
     </v-card-text>
+    <v-fab-transition>
+        <v-btn v-if="ready" class="mb-10 ml-1 pt-1 pl-1" color="red" fab left bottom dark absolute>
+          <v-icon>mdi-playlist-play</v-icon>
+        </v-btn>
+      </v-fab-transition>
     <v-card-actions class="justify-end">
-      <v-btn text @click="putRequest">Planen</v-btn>
-      <v-btn text @click="$router.go(-1)">Schließen</v-btn>
+      <v-btn text @click="putRequest"><v-icon>mdi-playlist-plus</v-icon></v-btn>
+      <v-btn text @click="$router.go(-1)"><v-icon>mdi-window-close</v-icon></v-btn>
+      
     </v-card-actions>
+    
   </v-card>
 </template>
 

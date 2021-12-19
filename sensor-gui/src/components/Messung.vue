@@ -25,11 +25,11 @@
         text
         :href="gotoApi()"
         target="_blank"
-      >API call</v-btn>
+      ><v-icon>mdi-cloud-braces</v-icon></v-btn>
       <v-btn
         text
         @click="$router.go(-1)"
-      >Schließen</v-btn>
+      ><v-icon>mdi-window-close</v-icon></v-btn>
     </v-card-actions>
   </div>
   <v-skeleton-loader

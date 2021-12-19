@@ -21,7 +21,7 @@
           color="primary"
           @click="$router.push({ name: 'NewMessung'})"
         >
-          Neue Messung
+          <v-icon>mdi-playlist-plus</v-icon>
         </v-btn>
       </v-card-title>
       <v-data-table
