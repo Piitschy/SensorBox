@@ -206,6 +206,7 @@ def schedule():
     #"delay" : 0,
     "demo": True
   }
+   
   kwargs = dict(request.get_json() or {})
   schedule_keys = ['id']+list(default.keys())
   schedules = [{ k: p['kwargs'][k] for k in schedule_keys if k in p['kwargs'] } for p in pool.procs]
