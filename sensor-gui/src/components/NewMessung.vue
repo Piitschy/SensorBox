@@ -2,13 +2,24 @@
   <v-card
     :loading="loading"
   >
-    <v-toolbar>
+    <v-toolbar class="elevation-3">
       <v-spacer></v-spacer>
         <v-toolbar-title>
           Neue Messung planen
         </v-toolbar-title>
       <v-spacer></v-spacer>
     </v-toolbar>
+    <v-expand-transition>
+      <v-data-table
+        v-if="scheduled.length > 0"
+        dense
+        :headers="usedHeaders"
+        :items="scheduled"
+        item-key="name"
+        hide-default-footer
+        class="ma-5 elevation-2"
+      ></v-data-table>
+    </v-expand-transition>
       <v-card-text class="pa-4">
         <v-text-field
           v-for="h in usedHeaders" :key="h.value"
@@ -23,7 +34,6 @@
           label="Demo"
           v-model="body.demo"
         ></v-checkbox>
-        {{body}}
       </v-card-text>
     <v-card-actions class="justify-end">
       <v-btn
@@ -48,6 +58,7 @@
       return {
         apiRoute: 'measurements/schedule',
         body: {demo: true},
+        scheduled: [],
         hide: [
           'start_date',
           'start_time'
@@ -68,18 +79,25 @@
       }
     },
     methods: {
-      ...mapActions(['putData']),
+      ...mapActions(['getData','putData']),
       async putRequest() {
         const data = {
           route: this.apiRoute,
           body: this.body
         }
         await this.putData(data)
+        await this.refreshScheduled()
       },
       cleanBody(k,type) {
         this.body[k] ?? delete this.body[k]
         if (type === 'number') this.body[k] = Number(this.body[k])
+      },
+      async refreshScheduled() {
+        this.scheduled = await this.getData(this.apiRoute)
       }
+    },
+    async mounted() {
+      this.refreshScheduled()
     }
   })
 </script>
