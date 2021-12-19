@@ -72,13 +72,13 @@ export default Vue.extend({
     },
   },
   methods: {
-    ...mapActions(["getData", "putData"]),
+    ...mapActions(["getData", "postData"]),
     async putRequest() {
       const data = {
         route: this.apiRoute,
         body: this.body,
       };
-      await this.putData(data);
+      await this.postData(data);
       await this.refreshScheduled();
     },
     cleanBody(k, type) {

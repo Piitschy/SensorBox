@@ -50,12 +50,12 @@ export default new Vuex.Store({
       !json.message || context.dispatch('notification/set', {message: json.message})
       return json.data
     },
-    async putData(context, data) {
+    async postData(context, data) {
       const route = data.route
       const body = data.body
       context.commit('startLoading')
       const response = await fetch(this.state.apiUrl+route, {
-        method: 'PUT', // *GET, POST, PUT, DELETE, etc.
+        method: 'POST', // *GET, POST, PUT, DELETE, etc.
         mode: 'cors', // no-cors, *cors, same-origin
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
         credentials: 'same-origin', // include, *same-origin, omit

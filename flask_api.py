@@ -114,7 +114,7 @@ def update():
 def reboot():
   return exec_command('reboot')
 
-@app.route('/sensors', methods=['GET','PUT','DELETE'])
+@app.route('/sensors', methods=['GET','POST','DELETE'])
 def sensors():
   default = {
     "name"  : "sensor",
@@ -131,7 +131,7 @@ def sensors():
   if request.method == 'GET':
     if 'info' in request.args:
       return jsonify({
-        'message':f'u need 2 PUT like the default',
+        'message':f'u need 2 POST like the default',
         'default': default
       }),200
 
@@ -147,8 +147,8 @@ def sensors():
       return jsonify({'message':f'{name} deleted'}), 200
     return jsonify({'error':'send {name: ... } in body and "delete" as arg to delete something'}), 400
   
-  # PUT
-  if request.method == 'PUT':    
+  # POST
+  if request.method == 'POST':    
     if not all(e in kwargs for e in default):
       return jsonify({'error':f'you need all of these params: {default}'}),400
     
@@ -195,7 +195,7 @@ def load_measurement(id):
     'data' : result
   }), 200
 
-@app.route('/measurements/schedule', methods=['GET','PUT','DELETE'])
+@app.route('/measurements/schedule', methods=['GET','POST','DELETE'])
 def schedule():
   default = {
     "name" : "measurement",
@@ -216,13 +216,13 @@ def schedule():
   if request.method == 'GET':
     if 'info' in request.args:
       return jsonify({
-        'message':f'u need 2 PUT like the default',
+        'message':f'u need 2 POST like the default',
         'default': default
       }),200
     return jsonify({'data':schedules}), 200
   
-  # PUT
-  if request.method == 'PUT':
+  # POST
+  if request.method == 'POST':
     if not all(e in kwargs for e in default):
       return jsonify({'error':f'you need all of these params: {default}'}),400
     
