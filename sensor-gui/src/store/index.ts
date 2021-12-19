@@ -47,11 +47,9 @@ export default new Vuex.Store({
       const json = await response.json()
       //const result = Object.keys(json.data).map(id => Object.assign({id:id},json.data[id]))
       context.commit('stopLoading')
-      !json.message || alert(json.message)
+      !json.message || context.dispatch('notification/set', {message: json.message})
       return json.data
     },
-
-    
     async putData(context, data) {
       const route = data.route
       const body = data.body
@@ -72,7 +70,7 @@ export default new Vuex.Store({
       const json = await response.json()
       //const result = Object.keys(json.data).map(id => Object.assign({id:id},json.data[id]))
       context.commit('stopLoading')
-      !json.message || alert(json.message)
+      !json.message || context.dispatch('notification/set', {message: json.message})
       return json.data
     }
 
@@ -82,7 +80,7 @@ export default new Vuex.Store({
       namespaced: true,
       state: {
         init: {
-          massage: null,
+          message: null,
           icon: null,
           color: null,
           timeout: 3000

@@ -11,7 +11,7 @@
         <v-icon left v-if="payload.icon">
           {{payload.icon}}
         </v-icon>
-        {{payload.massage}}
+        {{payload.message}}
       </center>
       <template v-slot:action="{ attrs }">
         <v-btn
