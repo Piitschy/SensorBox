@@ -17,7 +17,7 @@
           :type="h.type"
           outlined
           clearable
-          @input="clearBody(h.value,h.type)"
+          @input="cleanBody(h.value,h.type)"
         />
         <v-checkbox
           label="Demo"
@@ -76,7 +76,7 @@
         }
         await this.putData(data)
       },
-      clearBody(k,type) {
+      cleanBody(k,type) {
         this.body[k] ?? delete this.body[k]
         if (type === 'number') this.body[k] = Number(this.body[k])
       }
