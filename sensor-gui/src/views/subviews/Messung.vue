@@ -1,14 +1,5 @@
 <template>
-  <v-card
-    :loading="loading"
-  >
-    <v-toolbar>
-      <v-spacer></v-spacer>
-        <v-toolbar-title>
-          {{item.name}}
-        </v-toolbar-title>
-      <v-spacer></v-spacer>
-    </v-toolbar>
+  <SubView :loading="loading" :title="item.name">
     <div v-show="loaded">
       <v-card-text class="pa-4">
         <v-text-field
@@ -26,10 +17,7 @@
         :href="gotoApi()"
         target="_blank"
       ><v-icon>mdi-cloud-braces</v-icon></v-btn>
-      <v-btn
-        text
-        @click="$router.go(-1)"
-      ><v-icon>mdi-window-close</v-icon></v-btn>
+      
     </v-card-actions>
   </div>
   <v-skeleton-loader
@@ -37,15 +25,19 @@
     class="my-4"
     type="list-item@8, actions"
   />
-  </v-card>
+  </SubView>
 </template>
 
 <script >
   import Vue from 'vue'
+  import SubView from '@/components/SubView'
   import { mapState, mapActions } from 'vuex'
 
   export default Vue.extend({
     name: 'Messung',
+    components: {
+      SubView
+    },
     data: () =>{ 
       return {
         apiRouteBase: 'measurements',

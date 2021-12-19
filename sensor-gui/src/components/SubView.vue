@@ -1,0 +1,38 @@
+<template>
+  <v-card
+    :loading="loading"
+  >
+    <v-toolbar>
+      <v-spacer></v-spacer>
+        <v-toolbar-title>
+          {{title}}
+        </v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-btn
+        fab
+        text
+        @click="$router.go(-1)"
+      ><v-icon>mdi-window-close</v-icon>
+      </v-btn>
+    </v-toolbar>
+    <div>
+      <slot />
+    </div>
+  </v-card>
+</template>
+
+<script>
+export default {
+  name: 'SubView',
+  props: {
+    loading: {
+      type: Boolean,
+      default: false
+    },
+    title: {
+      type: String,
+      default: null
+    }
+  }
+}
+</script>

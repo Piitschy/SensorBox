@@ -1,14 +1,6 @@
 <template>
-  <v-card :loading="loading">
-    <v-toolbar class="elevation-3">
-      <v-spacer></v-spacer>
-      <v-toolbar-title> Neue Messung planen </v-toolbar-title>
-      <v-spacer></v-spacer>
-      
-    </v-toolbar>
-
+  <SubView :loading="loading" title="Neue Messung planen">
     <v-expand-transition>
-      
       <v-data-table
         v-if="ready"
         dense
@@ -18,7 +10,6 @@
         hide-default-footer
         class="ma-5 elevation-2"
       ></v-data-table>
-      
     </v-expand-transition>
     <v-card-text class="pa-4">
       <v-text-field
@@ -40,19 +31,21 @@
       </v-fab-transition>
     <v-card-actions class="justify-end">
       <v-btn text @click="putRequest"><v-icon>mdi-playlist-plus</v-icon></v-btn>
-      <v-btn text @click="$router.go(-1)"><v-icon>mdi-window-close</v-icon></v-btn>
-      
     </v-card-actions>
     
-  </v-card>
+  </SubView>
 </template>
 
 <script >
 import Vue from "vue";
+import SubView from '@/components/SubView'
 import { mapState, mapActions } from "vuex";
 
 export default Vue.extend({
   name: "Messung",
+  components: {
+      SubView
+    },
   data: () => {
     return {
       apiRoute: "measurements/schedule",

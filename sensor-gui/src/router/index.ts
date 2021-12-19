@@ -45,7 +45,7 @@ const routes: Array<RouteConfig> = [
         meta: {
           headline: 'Messungen'
         },
-        component: () => import(/* webpackChunkName: "newMeasurement" */ '@/components/NewMessung.vue')
+        component: () => import(/* webpackChunkName: "newMeasurement" */ '@/views/subviews/NewMessung.vue')
       },
       {
         path: ':id',
@@ -53,7 +53,7 @@ const routes: Array<RouteConfig> = [
         meta: {
           headline: 'Messungen'
         },
-        component: () => import(/* webpackChunkName: "measurement" */ '@/components/Messung.vue')
+        component: () => import(/* webpackChunkName: "measurement" */ '@/views/subviews/Messung.vue')
       }
     ]
   }
