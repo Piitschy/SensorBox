@@ -12,12 +12,12 @@
           ></v-text-field>
       </v-card-text>
     <v-card-actions class="justify-end">
-       <v-btn
+      <v-btn
         text large fab
         :href="gotoApi()"
         target="_blank"
-      ><v-icon>mdi-cloud-braces</v-icon></v-btn>
-      
+      ><v-icon>mdi-cloud-braces</v-icon>
+      </v-btn>
     </v-card-actions>
   </div>
   <v-skeleton-loader
