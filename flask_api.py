@@ -221,6 +221,11 @@ def schedule():
       }),200
     return jsonify({'data':schedules}), 200
   
+  # DELETE ALL
+  if request.method == 'DELETE':
+    pool.clear()
+    return jsonify({'message':'cleared'}), 200
+  
   # POST
   if request.method == 'POST':
     if not all(e in kwargs for e in default):
@@ -255,6 +260,7 @@ def schedule():
       'message':f'scheduled "{params["name"]}" successfull',
       'data': params
     }), 200
+  return jsonify({'error':'BAD REQUEST'}), 403
 
 @app.route('/measurements/schedule/start', methods=['GET'])
 def start_schedule():

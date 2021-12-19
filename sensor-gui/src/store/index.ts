@@ -5,7 +5,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    apiUrl: 'http://192.168.178.200:5000/',
+    apiUrl: location.protocol + '//' + location.hostname + ':5000/',
     loading: false,
     headers: [
       {text: 'Name', value: 'name', type: 'text'},
@@ -71,7 +71,28 @@ export default new Vuex.Store({
       context.commit('stopLoading')
       !json.message || context.dispatch('notification/set', {message: json.message})
       return json.data
-    }
+    },
+    async deleteData(context, route) {
+      context.commit('startLoading')
+      const response = await fetch(this.state.apiUrl+route,{
+        method: 'DELETE', // *GET, POST, PUT, DELETE, etc.
+        mode: 'cors', // no-cors, *cors, same-origin
+        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: 'same-origin', // include, *same-origin, omit
+        //headers: {
+        //  'Content-Type': 'application/json'
+          // 'Content-Type': 'application/x-www-form-urlencoded',
+        //},
+        redirect: 'follow', // manual, *follow, error
+        referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+        body: JSON.stringify({sure: true}) // body data type must match "Content-Type" header
+      })
+      const json = await response.json()
+      //const result = Object.keys(json.data).map(id => Object.assign({id:id},json.data[id]))
+      context.commit('stopLoading')
+      !json.message || context.dispatch('notification/set', {message: json.message})
+      return json.data
+    },
 
   },
   modules: {

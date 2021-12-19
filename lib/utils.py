@@ -189,6 +189,10 @@ class MultiProc:
             if p['id'] == id:
                 del self.procs[i]
         return
+    
+    def clear(self):
+        self.procs = []
+        return
 
     def _worker(self, id, proc, *args, **kwargs):
         self.return_dict.update({id: proc(*args, **kwargs)})
@@ -214,7 +218,7 @@ class MultiProc:
             p.join()
         return dict(self.return_dict)
 
-    def execute(self) -> list:
+    def execute(self,clear:bool=False) -> list:
         """Lässt den Pool laufen und fängt ihn wieder.
         Gut geeignet vom Parallelisieren von Prozessen.
 
@@ -226,5 +230,7 @@ class MultiProc:
         self.running = True
         self.start()
         result =self.join()
+        if clear:
+            self.clear()
         self.running = False
         return result

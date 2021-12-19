@@ -73,20 +73,18 @@ export default Vue.extend({
     },
   },
   methods: {
-    ...mapActions(["getData", "postData"]),
+    ...mapActions(["getData", "postData", "deleteData"]),
     async putRequest() {
       const data = {
         route: this.apiRoute,
         body: this.body,
       };
-      await this.postData(data);
-      await this.refreshScheduled();
+      await this.postData(data)
+      await this.refreshScheduled()
     },
     async clearRequest() {
-      const data = {
-        route: this.apiRoute,
-        body: this.body,
-      }
+      await this.deleteData(this.apiRoute)
+      await this.refreshScheduled()
     },
     cleanBody(k, type) {
       this.body[k] ?? delete this.body[k];
