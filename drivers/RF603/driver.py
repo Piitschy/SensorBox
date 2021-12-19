@@ -22,7 +22,7 @@ with open(filename) as f:
 ### BASE FUNKTIONS ###
 
 class Sensor(object):
-  name = 'RS603'
+  name = 'RF603'
   mRange = 0
   base = 0
   serial_no = 0
@@ -165,9 +165,10 @@ class Serial(Sensor):
   Returns:
       Sensor: Tools to communicate with given sensor
   """
-  def __init__(self,port=SERIAL_PATH_DEFAULT,addr:int=0x01,timeout:int=0.03):
+  def __init__(self,port=SERIAL_PATH_DEFAULT,addr:int=0x01,timeout:int=0.03,name:str=None):
     self.ser = serial.Serial(port,timeout=timeout,parity=serial.PARITY_EVEN)
     self.addr = addr
+    self.name = name or self.name
     if not self.ser.is_open:
       self._alert('Device not found')
       return 

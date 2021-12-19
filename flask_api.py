@@ -131,7 +131,7 @@ def sensors():
   if request.method == 'GET':
     if 'info' in request.args:
       return jsonify({
-        'massage':f'u need 2 PUT like the default',
+        'message':f'u need 2 PUT like the default',
         'default': default
       }),200
 
@@ -144,7 +144,7 @@ def sensors():
     if 'delete' in request.args and 'name' in kwargs:
       name = kwargs['name']
       db_sens.delete(name)
-      return jsonify({'massage':f'{name} deleted'}), 200
+      return jsonify({'message':f'{name} deleted'}), 200
     return jsonify({'error':'send {name: ... } in body and "delete" as arg to delete something'}), 400
   
   # PUT
@@ -154,7 +154,7 @@ def sensors():
     
     params = default | kwargs
     if params['device'] == 'RF603':
-      s = RF603.Serial(params['port'])
+      s = RF603.Serial(port=params['port'],name=params['name'])
       ident = s.identify()
       s.close()
       db_sens.write(params['name'],s)
@@ -199,11 +199,11 @@ def load_measurement(id):
 def schedule():
   default = {
     "name" : "measurement",
-    "senor_name"  : "sensor",
+    "sensor"  : "sensor",
     "rate": 1,
     "duration": 10.0,
-    "start_time" : None,
-    "delay" : 0,
+    #"start_time" : None,
+    #"delay" : 0,
     "demo": True
   }
   kwargs = dict(request.get_json() or {})
@@ -215,7 +215,7 @@ def schedule():
   if request.method == 'GET':
     if 'info' in request.args:
       return jsonify({
-        'massage':f'u need 2 PUT like the default',
+        'message':f'u need 2 PUT like the default',
         'default': default
       }),200
     return jsonify({'data':schedules}), 200
@@ -227,13 +227,16 @@ def schedule():
     
     params = default | kwargs
     
-    sName = params['senor_name']
+    sName = params['sensor']
     if sName in schedule_ids:
       pool.delete_process(sName)
-    if sName not in db_sens.read_all():
-      return jsonify({'error':'sensor not found'})
-    
-    s = db_sens.read(params['senor_name'])
+    if not params['demo']:
+      if sName not in db_sens.read_all():
+        return jsonify({'error':'sensor not found'})
+      
+      s = db_sens.read(params['sensor'])
+    else:
+      s = params['sensor']
     messung = Measurement(s)
 
     pool.add_process(
@@ -243,11 +246,12 @@ def schedule():
       duration=params['duration'],
       name=params['name'],
       db=db_meas,
+      sensor=sName,
       demo=params['demo']
     )
     
     return jsonify({
-      'massage':f'scheduled "{params["name"]}" successfull',
+      'message':f'scheduled "{params["name"]}" successfull',
       'data': params
     }), 200
 
