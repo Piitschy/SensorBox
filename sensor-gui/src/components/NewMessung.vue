@@ -12,15 +12,18 @@
       <v-card-text class="pa-4">
         <v-text-field
           v-for="h in usedHeaders" :key="h.value"
-          v-model="request[h.value]"
+          v-model="body[h.value]"
           :label="h.text"
+          :type="h.type"
           outlined
+          clearable
+          @input="clearBody(h.value,h.type)"
         />
         <v-checkbox
           label="Demo"
-          v-model="request.demo"
+          v-model="body.demo"
         ></v-checkbox>
-        {{request}}
+        {{body}}
       </v-card-text>
     <v-card-actions class="justify-end">
       <v-btn
@@ -37,14 +40,14 @@
 
 <script >
   import Vue from 'vue'
-  import { mapState } from 'vuex'
+  import { mapState, mapActions } from 'vuex'
 
   export default Vue.extend({
     name: 'Messung',
     data: () =>{ 
       return {
         apiRoute: 'measurements/schedule',
-        request: {},
+        body: {demo: true},
         hide: [
           'start_date',
           'start_time'
@@ -65,8 +68,17 @@
       }
     },
     methods: {
-      putRequest() {
-        alert(JSON.stringify(this.request))
+      ...mapActions(['putData']),
+      async putRequest() {
+        const data = {
+          route: this.apiRoute,
+          body: this.body
+        }
+        await this.putData(data)
+      },
+      clearBody(k,type) {
+        this.body[k] ?? delete this.body[k]
+        if (type === 'number') this.body[k] = Number(this.body[k])
       }
     }
   })
