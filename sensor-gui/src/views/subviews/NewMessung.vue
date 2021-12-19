@@ -30,7 +30,8 @@
         </v-btn>
       </v-fab-transition>
     <v-card-actions class="justify-end">
-      <v-btn text large fab @click="putRequest"><v-icon>mdi-playlist-plus</v-icon></v-btn>
+      <v-btn text large fab :disabled="!ready" @click="clearRequest"><v-icon>mdi-playlist-remove</v-icon></v-btn>
+      <v-btn text large fab :disabled="!body.name" @click="putRequest"><v-icon>mdi-playlist-check</v-icon></v-btn>
     </v-card-actions>
     
   </SubView>
@@ -80,6 +81,12 @@ export default Vue.extend({
       };
       await this.postData(data);
       await this.refreshScheduled();
+    },
+    async clearRequest() {
+      const data = {
+        route: this.apiRoute,
+        body: this.body,
+      }
     },
     cleanBody(k, type) {
       this.body[k] ?? delete this.body[k];
