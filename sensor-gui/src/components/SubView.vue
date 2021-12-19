@@ -3,15 +3,16 @@
     :loading="loading"
   >
     <v-toolbar>
-      <v-spacer></v-spacer>
+      <v-spacer/>
         <v-toolbar-title>
           {{title}}
         </v-toolbar-title>
-      <v-spacer></v-spacer>
+      <v-spacer/>
       <v-btn
-        fab
         text
+        fab
         @click="$router.go(-1)"
+        absolute
       ><v-icon>mdi-window-close</v-icon>
       </v-btn>
     </v-toolbar>

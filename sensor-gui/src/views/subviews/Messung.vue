@@ -13,7 +13,7 @@
       </v-card-text>
     <v-card-actions class="justify-end">
        <v-btn
-        text
+        text large fab
         :href="gotoApi()"
         target="_blank"
       ><v-icon>mdi-cloud-braces</v-icon></v-btn>

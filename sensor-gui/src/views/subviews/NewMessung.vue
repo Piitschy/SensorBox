@@ -30,7 +30,7 @@
         </v-btn>
       </v-fab-transition>
     <v-card-actions class="justify-end">
-      <v-btn text @click="putRequest"><v-icon>mdi-playlist-plus</v-icon></v-btn>
+      <v-btn text large fab @click="putRequest"><v-icon>mdi-playlist-plus</v-icon></v-btn>
     </v-card-actions>
     
   </SubView>
