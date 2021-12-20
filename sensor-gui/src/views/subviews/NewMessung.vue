@@ -36,7 +36,6 @@
       />
       <v-checkbox label="Demo" v-model="body.demo"></v-checkbox>
     </v-card-text>
-    {{body}}
     <v-card-actions class="justify-end">
       <v-btn text large fab :disabled="!ready" @click="clearRequest"><v-icon>mdi-playlist-remove</v-icon></v-btn>
       <v-btn text large fab :disabled="!body.name" @click="putRequest"><v-icon>mdi-playlist-check</v-icon></v-btn>

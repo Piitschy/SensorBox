@@ -13,7 +13,7 @@
         >{{ started ? countDown : 'START' }}
       </v-btn>
       <v-progress-linear
-        :active="started"
+        :active="(started && loading) || finished"
         class="mt-10"
         v-model="progress"
       ></v-progress-linear>
@@ -38,6 +38,7 @@ export default Vue.extend({
       apiRoute: "measurements/schedule/start",
       ready: false,
       started: false,
+      finished: false,
       progress: 0,
       countDown: 0
     };
@@ -50,6 +51,7 @@ export default Vue.extend({
     start() {
       this.countDown = this.longestDuration
       this.started = true
+      this. finished = false
       this.getData(this.apiRoute);
       this.countDownTimer()
       gsap.fromTo(
@@ -66,6 +68,7 @@ export default Vue.extend({
         }, 1000);
       } else {
         this.started = false
+        this.finished = true
       }
     },
     async refreshScheduled() {
