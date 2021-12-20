@@ -11,7 +11,7 @@
             outlined
           ></v-text-field>
       </v-card-text>
-    <v-card-actions class="justify-end">
+    <v-card-actions class="justify-space-between">
       <v-btn
         text large fab
         color="red"

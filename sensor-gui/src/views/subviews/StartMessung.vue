@@ -3,7 +3,7 @@
     <div class="pa-12">
       <div class="d-flex justify-center">
       <v-expand-transition>
-      <v-card v-if="!started" class="mb-8 d-inline-flex pa-2" text-align="center">
+      <v-card v-if="!started" class="mb-8 d-inline-flex pa-2" color="grey darken-3">
         <v-card-text class="d-flex justify-space-between">
           Geschätzte Dauer:&nbsp;<b>{{longestDuration}}&nbsp;s</b>
         </v-card-text>
