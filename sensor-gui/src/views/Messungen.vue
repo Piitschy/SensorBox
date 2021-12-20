@@ -8,6 +8,7 @@
       >
         <router-view></router-view>
       </v-dialog>
+      {{refresh}}
     <v-card>
       <v-card-title>
         <v-text-field
@@ -92,6 +93,14 @@
     },
     created() {
       this.reload()
-    }
+    },
+    watch:{
+      $route (to, from){
+        this.reload()
+      },
+      '$store.state.refresh'(){
+        this.reload()
+      }
+    } 
   })
 </script>

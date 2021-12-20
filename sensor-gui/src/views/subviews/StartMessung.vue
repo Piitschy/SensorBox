@@ -69,6 +69,7 @@ export default Vue.extend({
       } else {
         this.started = false
         this.finished = true
+        this.$store.commit('addRefresh')
       }
     },
     async refreshScheduled() {

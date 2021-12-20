@@ -14,6 +14,12 @@
     <v-card-actions class="justify-end">
       <v-btn
         text large fab
+        color="red"
+        @click="deleteData(apiRoute);$router.go(-1)"
+      ><v-icon>mdi-delete</v-icon>
+      </v-btn>
+      <v-btn
+        text large fab
         :href="gotoApi()"
         target="_blank"
       ><v-icon>mdi-cloud-braces</v-icon>
@@ -63,7 +69,7 @@
       }
     },
     methods: {
-      ...mapActions(['getData']),
+      ...mapActions(['getData','deleteData']),
       getText(key) {
         try {
           return this.headers.find(e => e.value === key).text
@@ -73,7 +79,6 @@
       },
       gotoApi() {
         const ref = this.$store.state.apiUrl+this.apiRoute
-        console.log(ref)
         return ref
       }
     },

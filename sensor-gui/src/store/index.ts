@@ -8,6 +8,7 @@ export default new Vuex.Store({
     apiUrl: location.protocol + '//' + location.hostname + ':5000/',
     loading: false,
     longestDuration: 0,
+    refresh: 0,
     headers: [
       {text: 'Name', value: 'name', type: 'text'},
       {text: 'Sensor', value: 'sensor', type: 'text'},
@@ -29,6 +30,9 @@ export default new Vuex.Store({
     },
     setLongestDuration(state, newDuration) {
       state.longestDuration = Number(newDuration)
+    },
+    addRefresh(state) {
+      state.refresh = state.refresh +1
     }
   },
   actions: {
