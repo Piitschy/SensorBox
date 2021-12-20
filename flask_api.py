@@ -185,15 +185,24 @@ def load_measurements():
     'data' : result
   }), 200
 
-@app.route('/measurements/<id>', methods=['GET'])
+@app.route('/measurements/<id>', methods=['GET','DELETE'])
 def load_measurement(id):
-  try:
-    result = db_meas.read(id)
-  except KeyError:
-    return jsonify({'error': 'unknown measurement'}), 404
-  return jsonify({
-    'data' : result
-  }), 200
+  # GET
+  if request.method == 'GET':
+    try:
+      result = db_meas.read(id)
+    except KeyError:
+      return jsonify({'error': 'unknown measurement'}), 404
+    return jsonify({
+      'data' : result
+    }), 200
+    
+    # DELETE
+  if request.method == 'DELETE':
+    db_meas.delete(id)
+    return jsonify({
+      'message' : f'{id} deleted'
+    }), 200
 
 @app.route('/measurements/schedule', methods=['GET','POST','DELETE'])
 def schedule():
