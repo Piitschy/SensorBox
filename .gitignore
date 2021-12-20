@@ -1,3 +1,5 @@
 *test.py
 *.env
+/var/db_measurements
+*.pyc
 # var/*
