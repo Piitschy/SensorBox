@@ -31,7 +31,6 @@
           :label="h.text"
           :type="h.type"
           outlined
-          clearable
           @input="cleanBody(h.value, h.type)"
         />
       </div>
@@ -78,22 +77,11 @@ export default Vue.extend({
     },
     ready() {
       return this.scheduled.length > 0;
-    },
-    longestDuration() {
-      var dur = 0
-      if (this.scheduled.length > 0) {
-        for (const e of this.scheduled) {
-          const newDur = e.duration
-          dur = newDur > dur ? newDur : dur
-        }
-      }
-      return dur
     }
   },
   methods: {
     ...mapActions(["getData", "postData", "deleteData"]),
     gotoStart() {
-      this.$store.commit('setLongestDuration',this.longestDuration)
       this.$router.push({ name: 'StartMessung'})
     },
     async putRequest() {
@@ -122,3 +110,16 @@ export default Vue.extend({
   },
 });
 </script>
+
+<style scoped>
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+</style>

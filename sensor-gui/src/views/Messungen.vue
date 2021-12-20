@@ -41,7 +41,8 @@
         :items-per-page="15"
         :search="search"
         :loading="loadingAnimation"
-        loading-text="Lade..."
+        loading-text="Lade Messungen"
+        noDataText="Keine Messungen vorhanden"
         class="elevation-1"
         @click:row="click_on_row"
       ></v-data-table>

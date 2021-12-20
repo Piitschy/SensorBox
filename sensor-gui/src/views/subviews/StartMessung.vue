@@ -1,6 +1,16 @@
 <template>
   <SubView :loading="loading" title="Messung starten" arrow>
     <div class="pa-12">
+      <div class="d-flex justify-center">
+      <v-expand-transition>
+      <v-card v-if="!started" class="mb-8 d-inline-flex pa-2" text-align="center">
+        <v-card-text class="d-flex justify-space-between">
+          Geschätzte Dauer:&nbsp;<b>{{longestDuration}}&nbsp;s</b>
+        </v-card-text>
+      </v-card>
+      </v-expand-transition>
+      </div>
+      <div class="d-flex justify-center">
       <v-btn
         :disabled="!ready"
         :class="ready ? 'pulse' : null"
@@ -8,10 +18,9 @@
         x-large
         fab
         color="red"
-        relative
-        style="left: 45%"
         >{{ started && loading ? countDown : 'START' }}
       </v-btn>
+      </div>
       <v-progress-linear
         :active="(started && loading) || finished"
         class="mt-10"
@@ -39,12 +48,23 @@ export default Vue.extend({
       ready: false,
       started: false,
       finished: false,
+      scheduled: [],
       progress: 0,
       countDown: 0
     };
   },
   computed: {
-    ...mapState(["loading", "longestDuration"]),
+    ...mapState(["loading"]),
+    longestDuration() {
+      var dur = 0
+      if (this.scheduled.length > 0) {
+        for (const e of this.scheduled) {
+          const newDur = e.duration
+          dur = newDur > dur ? newDur : dur
+        }
+      }
+      return dur
+    }
   },
   methods: {
     ...mapActions(["getData"]),
@@ -74,6 +94,7 @@ export default Vue.extend({
     },
     async refreshScheduled() {
       var scheduled = await this.getData("measurements/schedule");
+      this.scheduled = scheduled
       this.ready = scheduled.length > 0;
     },
   },

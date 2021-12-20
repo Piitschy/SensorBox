@@ -9,6 +9,5 @@ export default new Vuetify({
   },
   theme: {
     dark: true
-  },
-  noDataText: 'keine Daten'
+  }
 });
