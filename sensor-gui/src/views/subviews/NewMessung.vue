@@ -52,7 +52,7 @@ export default Vue.extend({
   data: () => {
     return {
       apiRoute: "measurements/schedule",
-      body: { demo: true },
+      body: {},
       scheduled: [],
       hide: ["start_date", "start_time"],
     };

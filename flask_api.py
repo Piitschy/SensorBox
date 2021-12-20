@@ -167,9 +167,9 @@ def show_drivers():
   drivers = get_driver_list(kwargs["device"])
   return drivers
 
-@app.route('/measure/<name>', methods=['GET'])
-def get_measure(name):
-  s = db_sens.read(name)
+@app.route('/measure/<sensor>', methods=['GET'])
+def get_measure(sensor):
+  s = db_sens.read(sensor)
   s.open()
   result = s.measure()
   s.close()
@@ -204,7 +204,7 @@ def schedule():
     "duration": 10.0,
     #"start_time" : None,
     #"delay" : 0,
-    "demo": True
+    "demo": False
   }
    
   kwargs = dict(request.get_json() or {})
