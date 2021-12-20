@@ -19,7 +19,7 @@
         ></v-text-field>
 
         <v-btn 
-          class="ml-4"
+          class="ml-4 mt-3"
           color="primary"
           @click="reload"
         >
@@ -27,7 +27,7 @@
         </v-btn>
 
         <v-btn 
-          class="ml-4"
+          class="ml-4 mt-3"
           color="primary"
           @click="$router.push({ name: 'NewMessung'})"
         >

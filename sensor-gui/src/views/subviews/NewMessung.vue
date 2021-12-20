@@ -34,7 +34,7 @@
           @input="cleanBody(h.value, h.type)"
         />
       </div>
-      <v-checkbox label="Demo" v-model="body.demo"></v-checkbox>
+      <v-switch label="Demo" v-model="body.demo"></v-switch>
     </v-card-text>
     <v-card-actions class="justify-space-between">
       <v-btn text large fab :disabled="!ready" @click="clearRequest" color="red"><v-icon>mdi-playlist-remove</v-icon></v-btn>
