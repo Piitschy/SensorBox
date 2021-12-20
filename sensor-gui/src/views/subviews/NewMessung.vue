@@ -24,16 +24,17 @@
         outlined
         clearable
       />
-      <v-text-field
-        v-for="h in usedHeaders"
-        :key="h.value"
-        v-model="body[h.value]"
-        :label="h.text"
-        :type="h.type"
-        outlined
-        clearable
-        @input="cleanBody(h.value, h.type)"
-      />
+      <div v-for="h in usedHeaders" :key="h.value">
+        <v-text-field
+          v-if="h.value !== 'sensor'"
+          v-model="body[h.value]"
+          :label="h.text"
+          :type="h.type"
+          outlined
+          clearable
+          @input="cleanBody(h.value, h.type)"
+        />
+      </div>
       <v-checkbox label="Demo" v-model="body.demo"></v-checkbox>
     </v-card-text>
     <v-card-actions class="justify-end">
@@ -59,7 +60,7 @@ export default Vue.extend({
       apiRoute: "measurements/schedule",
       body: { demo: true },
       scheduled: [],
-      hide: ["sensor", "start_date", "start_time"],
+      hide: ["start_date", "start_time"],
     };
   },
   computed: {
