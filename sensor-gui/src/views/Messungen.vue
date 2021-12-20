@@ -89,6 +89,9 @@
       },
       reload() {
         this.get_and_transform_data('measurements')
+      },
+      sleep(milliseconds) {
+        return new Promise(resolve => setTimeout(resolve, milliseconds))
       }
     },
     created() {
@@ -98,7 +101,8 @@
       $route (to, from){
         this.reload()
       },
-      '$store.state.refresh'(){
+      async '$store.state.refresh'(){
+        await this.sleep(1000)
         this.reload()
       }
     } 
