@@ -17,6 +17,13 @@
       ></v-data-table>
     </v-expand-transition>
     <v-card-text class="pa-4">
+      <v-select
+        label='sensor'
+        :items='sensorNames'
+        v-model="body.sensor"
+        outlined
+        clearable
+      />
       <v-text-field
         v-for="h in usedHeaders"
         :key="h.value"
@@ -29,8 +36,6 @@
       />
       <v-checkbox label="Demo" v-model="body.demo"></v-checkbox>
     </v-card-text>
-
-    
     <v-card-actions class="justify-end">
       <v-btn text large fab :disabled="!ready" @click="clearRequest"><v-icon>mdi-playlist-remove</v-icon></v-btn>
       <v-btn text large fab :disabled="!body.name" @click="putRequest"><v-icon>mdi-playlist-check</v-icon></v-btn>
@@ -54,7 +59,7 @@ export default Vue.extend({
       apiRoute: "measurements/schedule",
       body: {},
       scheduled: [],
-      hide: ["start_date", "start_time"],
+      hide: ["sensor", "start_date", "start_time"],
     };
   },
   computed: {
@@ -97,6 +102,7 @@ export default Vue.extend({
       };
       await this.postData(data)
       await this.refreshScheduled()
+      this.body = {}
     },
     async clearRequest() {
       await this.deleteData(this.apiRoute)
