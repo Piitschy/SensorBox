@@ -10,7 +10,7 @@
         color="red"
         relative
         style="left: 45%"
-        >{{ started ? countDown : 'START' }}
+        >{{ started && loading ? countDown : 'START' }}
       </v-btn>
       <v-progress-linear
         :active="(started && loading) || finished"

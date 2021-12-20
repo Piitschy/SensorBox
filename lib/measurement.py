@@ -22,7 +22,7 @@ class Measurement(object):
     startDate = time_str(start, DATE_FORMAT)
     startTime = time_str(start, TIME_FORMAT)
     meas = []
-    id = hasher(' '.join([startDate,startTime,name]))
+    id = hasher(' '.join([name,sensor,str(start)]))
     
     if demo:
       while time() <= start + duration:
