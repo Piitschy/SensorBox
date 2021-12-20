@@ -36,6 +36,7 @@
       />
       <v-checkbox label="Demo" v-model="body.demo"></v-checkbox>
     </v-card-text>
+    {{body}}
     <v-card-actions class="justify-end">
       <v-btn text large fab :disabled="!ready" @click="clearRequest"><v-icon>mdi-playlist-remove</v-icon></v-btn>
       <v-btn text large fab :disabled="!body.name" @click="putRequest"><v-icon>mdi-playlist-check</v-icon></v-btn>
@@ -57,7 +58,7 @@ export default Vue.extend({
   data: () => {
     return {
       apiRoute: "measurements/schedule",
-      body: {},
+      body: { demo: true },
       scheduled: [],
       hide: ["sensor", "start_date", "start_time"],
     };
@@ -102,7 +103,7 @@ export default Vue.extend({
       };
       await this.postData(data)
       await this.refreshScheduled()
-      this.body = {}
+      this.body = { demo: true }
     },
     async clearRequest() {
       await this.deleteData(this.apiRoute)

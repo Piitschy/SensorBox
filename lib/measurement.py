@@ -29,8 +29,8 @@ class Measurement(object):
         meas.append(random.randrange(500))
         sleep(1/rate)
     else:
-      #if sensor != self.sensor.name:
-      #  return 'Sensor names doesnt match'
+      if sensor != self.sensor.name:
+        return 'Sensor names doesnt match'
       self.sensor.open()
       while time() <= start + duration:
         meas.append(self.sensor.measure())
