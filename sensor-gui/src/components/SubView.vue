@@ -13,7 +13,8 @@
         fab
         @click="$router.go(-1)"
         absolute
-      ><v-icon>mdi-window-close</v-icon>
+      ><v-icon v-if="arrow">mdi-arrow-left</v-icon>
+      <v-icon v-else>mdi-window-close</v-icon>
       </v-btn>
     </v-toolbar>
     <div>
@@ -33,6 +34,10 @@ export default {
     title: {
       type: String,
       default: null
+    },
+    arrow: {
+      type: Boolean,
+      default: false
     }
   }
 }

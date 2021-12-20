@@ -1,5 +1,10 @@
 <template>
   <SubView :loading="loading" title="Neue Messung planen">
+    <v-fab-transition>
+      <v-btn v-if="ready" class="mt-16 ml-1 pt-1 pl-1" color="red" fab right top dark absolute @click="gotoStart">
+        <v-icon>mdi-playlist-play</v-icon>
+      </v-btn>
+    </v-fab-transition>
     <v-expand-transition>
       <v-data-table
         v-if="ready"
@@ -24,11 +29,8 @@
       />
       <v-checkbox label="Demo" v-model="body.demo"></v-checkbox>
     </v-card-text>
-    <v-fab-transition>
-        <v-btn v-if="ready" class="mb-10 ml-1 pt-1 pl-1" color="red" fab left bottom dark absolute>
-          <v-icon>mdi-playlist-play</v-icon>
-        </v-btn>
-      </v-fab-transition>
+
+    
     <v-card-actions class="justify-end">
       <v-btn text large fab :disabled="!ready" @click="clearRequest"><v-icon>mdi-playlist-remove</v-icon></v-btn>
       <v-btn text large fab :disabled="!body.name" @click="putRequest"><v-icon>mdi-playlist-check</v-icon></v-btn>
@@ -71,9 +73,23 @@ export default Vue.extend({
     ready() {
       return this.scheduled.length > 0;
     },
+    longestDuration() {
+      var dur = 0
+      if (this.scheduled.length > 0) {
+        for (const e of this.scheduled) {
+          const newDur = e.duration
+          dur = newDur > dur ? newDur : dur
+        }
+      }
+      return dur
+    }
   },
   methods: {
     ...mapActions(["getData", "postData", "deleteData"]),
+    gotoStart() {
+      this.$store.commit('setLongestDuration',this.longestDuration)
+      this.$router.push({ name: 'StartMessung'})
+    },
     async putRequest() {
       const data = {
         route: this.apiRoute,

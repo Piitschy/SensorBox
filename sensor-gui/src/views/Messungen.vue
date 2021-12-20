@@ -16,6 +16,15 @@
           label="Suche nach Messdaten"
           hide-details
         ></v-text-field>
+
+        <v-btn 
+          class="ml-4"
+          color="primary"
+          @click="reload"
+        >
+          <v-icon>mdi-refresh</v-icon>
+        </v-btn>
+
         <v-btn 
           class="ml-4"
           color="primary"
@@ -23,13 +32,14 @@
         >
           <v-icon>mdi-playlist-plus</v-icon>
         </v-btn>
+        
       </v-card-title>
       <v-data-table
         :headers="headers"
         :items="measurements"
         :items-per-page="15"
         :search="search"
-        :loading="loading"
+        :loading="loadingAnimation"
         loading-text="Lade..."
         class="elevation-1"
         @click:row="click_on_row"
@@ -58,6 +68,9 @@
       ...mapState(['loading','headers']),
       dialog() {
         return this.$route.name != 'Messungen'
+      },
+      loadingAnimation() {
+        return this.loading && this.measurements.length === 0
       }
     },
 
@@ -72,10 +85,13 @@
         const measurements = Object.keys(data).map(id => Object.assign({id:id},data[id]))
         this.measurements = measurements
         return measurements
+      },
+      reload() {
+        this.get_and_transform_data('measurements')
       }
     },
     created() {
-      this.get_and_transform_data('measurements')
+      this.reload()
     }
   })
 </script>

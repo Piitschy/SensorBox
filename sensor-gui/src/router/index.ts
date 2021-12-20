@@ -48,6 +48,14 @@ const routes: Array<RouteConfig> = [
         component: () => import(/* webpackChunkName: "newMeasurement" */ '@/views/subviews/NewMessung.vue')
       },
       {
+        path: 'schedule/start',
+        name: 'StartMessung',
+        meta: {
+          headline: 'Messungen'
+        },
+        component: () => import(/* webpackChunkName: "startMeasurement" */ '@/views/subviews/StartMessung.vue')
+      },
+      {
         path: ':id',
         name: 'Messung',
         meta: {

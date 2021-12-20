@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <Notification />
+    <Notification v-if="false" />
         <v-navigation-drawer
           v-model="drawer"
           app

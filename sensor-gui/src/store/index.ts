@@ -7,6 +7,7 @@ export default new Vuex.Store({
   state: {
     apiUrl: location.protocol + '//' + location.hostname + ':5000/',
     loading: false,
+    longestDuration: 0,
     headers: [
       {text: 'Name', value: 'name', type: 'text'},
       {text: 'Sensor', value: 'sensor', type: 'text'},
@@ -26,6 +27,9 @@ export default new Vuex.Store({
     stopLoading(state) {
       state.loading = false
     },
+    setLongestDuration(state, newDuration) {
+      state.longestDuration = Number(newDuration)
+    }
   },
   actions: {
     async getData(context, route) {
