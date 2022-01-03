@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/precache-manifest.0dc0f19c64438169adbe055fcea86989.js"
+  "/precache-manifest.221ddcecb8bdac7da9fc338005188e70.js"
 );
 
 workbox.core.setCacheNameDetails({prefix: "sensor-gui"});
