@@ -1,0 +1,2 @@
+(window["webpackJsonp"]=window["webpackJsonp"]||[]).push([["sensors"],{"5a8d":function(e,n,l){"use strict";l.r(n);var o=function(){var e=this,n=e.$createElement,l=e._self._c||n;return l("hello-world")},t=[],a=l("2b0e"),s=l("fdab"),r=a["a"].extend({name:"Home",components:{HelloWorld:s["a"]}}),c=r,u=l("2877"),d=Object(u["a"])(c,o,t,!1,null,null,null);n["default"]=d.exports}}]);
+//# sourceMappingURL=sensors.1b64b9f4.js.map
