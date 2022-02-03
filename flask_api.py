@@ -1,3 +1,4 @@
+#!/usr/bin/python
 from flask import Flask, request, jsonify
 import drivers.RF603.driver as RF603
 import subprocess
