@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import drivers.RF603.driver as RF603
 import sys, os
+from datetime import datetime
 try:
     import RPi.GPIO
 except (RuntimeError, ModuleNotFoundError):
@@ -10,6 +11,8 @@ except (RuntimeError, ModuleNotFoundError):
   sys.modules['smbus'] = fake_rpi.smbus # Fake smbus (I2C)
 
 import RPi.GPIO as GPIO
+
+clc = lambda: os.system('cls||clear')
 
 ### CONF
 pins_in = {
@@ -70,19 +73,18 @@ def minimum(m:list):
   return min(m_fil)
 
 ### RUN
-start = lambda: True if GPIO.input(pins_in['start']) else False
-i=200
+read_pin = lambda x: True if GPIO.input(pins_in[x]) else False
 meas = []
-os.system('cls||clear')
+clc()
 while True:
-  if i>0:
+  if read_pin('start'):
     result = s.measure()
     meas.append(result)
-    i=i-1
   elif len(meas)>0:
     minim = minimum(meas)
     bins = encode(minim)
     print(bins, minim)
     send(bins)
+    with open("/home/pi/messungen.txt",'a') as f:
+      f.write(' '.join([str(datetime.now()),str(meas)])+'\n')
     meas = []
-    i=200
