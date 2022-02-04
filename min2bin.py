@@ -16,8 +16,8 @@ clc = lambda: os.system('cls||clear')
 ### CONF
 pins_in = {
     'start':2,   #pin 3
-    'standby':3, #pin 4
-    'request':4  #pin 5
+    'standby':3, #pin 5
+    'request':4  #pin 7
   }
 pins_out = {
   1   : 17, #pin 11
