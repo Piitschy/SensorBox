@@ -3,21 +3,21 @@ import drivers.RF603.driver as RF603
 import sys, os
 from datetime import datetime
 try:
-    import RPi.GPIO
+    import RPi.GPIO as GPIO
 except (RuntimeError, ModuleNotFoundError):
   import fake_rpi
   sys.modules['RPi'] = fake_rpi.RPi     # Fake RPi
   sys.modules['RPi.GPIO'] = fake_rpi.RPi.GPIO # Fake GPIO
   sys.modules['smbus'] = fake_rpi.smbus # Fake smbus (I2C)
-
-import RPi.GPIO as GPIO
+  import RPi.GPIO as GPIO
 
 clc = lambda: os.system('cls||clear')
 
 ### CONF
 pins_in = {
     'start':1,
-    'laser':2
+    'standby':2,
+    'request':3
   }
 pins_out = {
   1   : 23,
@@ -45,9 +45,16 @@ while True:
     break
   
 
+read_pin = lambda p: GPIO.input(pins_in[p])
+
+def set_pin(p:int, value=True, toggle:bool=False):
+  if toggle:
+    value = not read_pin(p)
+  GPIO.output(p, value)
+
 def nullGPIOs():
   for p in pins_out.values():
-    GPIO.output(p, GPIO.LOW)
+    GPIO.output(p, 0)
 
 def encode(val:float, bins:int=10 , min:float=0, max:float=500) -> str:
   d_max = 2**bins
@@ -58,11 +65,10 @@ def encode(val:float, bins:int=10 , min:float=0, max:float=500) -> str:
   return bits
 
 def send(bits:str):
-  #nullGPIOs()
-  b_list = reversed([b for b in bits])
+  nullGPIOs()
+  b_list = reversed([int(b) for b in bits])
   for p,b in zip(pins_out.values(), b_list):
-    #print(p,b)
-    pass
+    set_pin(p, b)
 
 def minimum(m:list):
   if all(v==0 for v in m):
@@ -73,7 +79,6 @@ def minimum(m:list):
   return min(m_fil)
 
 ### RUN
-read_pin = lambda x: True if GPIO.input(pins_in[x]) else False
 meas = []
 clc()
 while True:
