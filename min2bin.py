@@ -118,7 +118,7 @@ def main():
 
   ### RUN
   meas = []
-  clc()
+  #clc()
   s.turn('off')
   while True:
     if read('s'):
@@ -127,7 +127,6 @@ def main():
 
   while True:
     if read('s'): #read_pin('start'):
-      print('Messung')
       try:
         result = s.measure()
       except:
@@ -141,17 +140,19 @@ def main():
         s.turn('off')
         minim = minimum(meas)
         bins = encode(minim)
-        clc()
+        #clc()
         print(bins, minim)
         send(bins)
-        write2db(meas)
-        with open("messungen_"+str(datetime.now())+".csv",'w') as f:
-          f.write('\n'.join([str(e) for e in meas]))
+        try:
+          write2db(meas)
+        except:
+          with open("messungen_"+str(datetime.now())+".csv",'w') as f:
+            f.write('\n'.join([str(e) for e in meas]))
         meas = []
         while True:
           if read('s'):
             nullGPIOs()
-            clc()
+            #clc()
             s.turn('on')
             break
     continue
