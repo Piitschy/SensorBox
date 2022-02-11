@@ -81,25 +81,27 @@ def minimum(m:list):
   m_fil = [v for v in m if v>0]
   return min(m_fil)
 
+read = lambda command, key: read_pin(command) or keyboard.read_key() == key
+
 ### RUN
 meas = []
 clc()
 s.turn('off')
 while True:
-  if keyboard.read_key() == "s":
+  if read('start', 's'):
     s.turn('on')
     break
 
 while True:
-  if keyboard.read_key() == "s": #read_pin('start'):
+  if read('start', 's'): #read_pin('start'):
     print('Messung')
     result = s.measure()
     meas.append(result)
   elif len(meas)>0:
-    if keyboard.read_key() == "s":#read_pin('start'):
+    if read('start', 's'):#read_pin('start'):
       s.turn('on')
       continue
-    elif keyboard.read_key() == "r": #read_pin('request'):
+    elif read('request', 'r'): #read_pin('request'):
       s.turn('off')
       minim = minimum(meas)
       bins = encode(minim)
@@ -110,11 +112,9 @@ while True:
         f.write(' '.join([str(datetime.now()),str(meas)])+'\n')
       meas = []
       while True:
-        if keyboard.read_key() == "s":
+        if read('start', 's'):
           nullGPIOs()
           clc()
           s.turn('on')
           break
-        if keyboard.read_key() == "o":
-          s.turn('off')
   continue
