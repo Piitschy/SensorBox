@@ -104,7 +104,7 @@ def main():
     start = time()
     
     dataset = {
-      'name': 'Messung',
+      'name': 'AutoMessung',
       'sensor': 'RF603',
       'rate': 0,
       'start_date': time_str(start, DATE_FORMAT),
