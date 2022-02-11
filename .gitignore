@@ -2,4 +2,5 @@
 *.env
 /var/db_measurements
 *.pyc
+messungen/*
 # var/*

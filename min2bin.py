@@ -7,20 +7,22 @@ import keyboard
 
 try:
     import RPi.GPIO as GPIO
+    key_input = False
 except (RuntimeError, ModuleNotFoundError):
   import fake_rpi
   sys.modules['RPi'] = fake_rpi.RPi     # Fake RPi
   sys.modules['RPi.GPIO'] = fake_rpi.RPi.GPIO # Fake GPIO
   sys.modules['smbus'] = fake_rpi.smbus # Fake smbus (I2C)
+  key_input = True
   import RPi.GPIO as GPIO
 
 clc = lambda: os.system('cls||clear')
 
 ### CONF
 pins_in = {
-    'start':2,   #pin 3
-    'standby':3, #pin 5
-    'request':4  #pin 7
+    's':2,   #pin 3 start
+    'o':3, #pin 5 standby
+    'r':4  #pin 7 request
   }
 pins_out = {
   1   : 17, #pin 11
@@ -81,38 +83,42 @@ def minimum(m:list):
   m_fil = [v for v in m if v>0]
   return min(m_fil)
 
-read = lambda command, key: read_pin(command) or keyboard.read_key() == key
+def read(command):
+  if key_input:
+    return keyboard.read_key() == command
+  else:
+    return read_pin(command)
 
 ### RUN
 meas = []
 clc()
 s.turn('off')
 while True:
-  if read('start', 's'):
+  if read('s'):
     s.turn('on')
     break
 
 while True:
-  if read('start', 's'): #read_pin('start'):
+  if read('s'): #read_pin('start'):
     print('Messung')
     result = s.measure()
     meas.append(result)
   elif len(meas)>0:
-    if read('start', 's'):#read_pin('start'):
+    if read('s'):#read_pin('start'):
       s.turn('on')
       continue
-    elif read('request', 'r'): #read_pin('request'):
+    elif read('r'): #read_pin('request'):
       s.turn('off')
       minim = minimum(meas)
       bins = encode(minim)
       clc()
       print(bins, minim)
       send(bins)
-      with open("messungen.txt",'a') as f:
-        f.write(' '.join([str(datetime.now()),str(meas)])+'\n')
+      with open("messungen/"+str(datetime.now())+".txt",'w') as f:
+        f.write('\n'.join([str(e) for e in meas]))
       meas = []
       while True:
-        if read('start', 's'):
+        if read('s'):
           nullGPIOs()
           clc()
           s.turn('on')
