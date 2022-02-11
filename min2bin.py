@@ -48,7 +48,7 @@ while True:
     break
   
 
-read_pin = lambda p: GPIO.input(pins_in[p])
+read_pin = lambda p: True if GPIO.input(pins_in[p]) == 0 else False
 
 def set_pin(p:int, value=True, toggle:bool=False):
   if toggle:
