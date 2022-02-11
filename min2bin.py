@@ -40,7 +40,7 @@ GPIO.setmode(GPIO.BCM)
 
 for func, pins in [(GPIO.IN, pins_in), (GPIO.OUT, pins_out)]:
   for name, p  in pins.items():
-    GPIO.setup(func, p)
+    GPIO.setup(p, func)
 
 while True:
   s = RF603.Serial()
