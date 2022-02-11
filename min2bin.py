@@ -114,7 +114,7 @@ while True:
       clc()
       print(bins, minim)
       send(bins)
-      with open("messungen/"+str(datetime.now())+".txt",'w') as f:
+      with open("messungen_"+str(datetime.now())+".csv",'w') as f:
         f.write('\n'.join([str(e) for e in meas]))
       meas = []
       while True:
