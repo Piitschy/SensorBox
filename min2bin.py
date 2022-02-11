@@ -2,6 +2,9 @@
 import drivers.RF603.driver as RF603
 import sys, os
 from datetime import datetime
+from time import sleep
+import keyboard
+
 try:
     import RPi.GPIO as GPIO
 except (RuntimeError, ModuleNotFoundError):
@@ -81,15 +84,37 @@ def minimum(m:list):
 ### RUN
 meas = []
 clc()
+s.turn('off')
 while True:
-  if read_pin('start'):
+  if keyboard.read_key() == "s":
+    s.turn('on')
+    break
+
+while True:
+  if keyboard.read_key() == "s": #read_pin('start'):
+    print('Messung')
     result = s.measure()
     meas.append(result)
   elif len(meas)>0:
-    minim = minimum(meas)
-    bins = encode(minim)
-    print(bins, minim)
-    send(bins)
-    with open("/home/pi/messungen.txt",'a') as f:
-      f.write(' '.join([str(datetime.now()),str(meas)])+'\n')
-    meas = []
+    if keyboard.read_key() == "s":#read_pin('start'):
+      s.turn('on')
+      continue
+    elif keyboard.read_key() == "r": #read_pin('request'):
+      s.turn('off')
+      minim = minimum(meas)
+      bins = encode(minim)
+      clc()
+      print(bins, minim)
+      send(bins)
+      with open("messungen.txt",'a') as f:
+        f.write(' '.join([str(datetime.now()),str(meas)])+'\n')
+      meas = []
+      while True:
+        if keyboard.read_key() == "s":
+          nullGPIOs()
+          clc()
+          s.turn('on')
+          break
+        if keyboard.read_key() == "o":
+          s.turn('off')
+  continue
