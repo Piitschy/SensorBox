@@ -12,6 +12,8 @@ from lib.utils import DB, MultiProc, conf
 from lib.measurement import Measurement
 from flask_cors import CORS
 
+import min2bin
+
 ### CONST ###
 
 GIT_PATH = path.abspath(path.join(path.dirname(path.realpath(__file__)),''))
@@ -281,4 +283,9 @@ if __name__ =='__main__':
   db_sens = DB(DB_SENS_PATH)
   db_meas = DB(DB_MEAS_PATH)
   pool = MultiProc()
+  subprocs = MultiProc()
+  
+  subprocs.add_process(min2bin.main)
+  subprocs.start()
+  
   app.run(host="0.0.0.0", debug=True) 
