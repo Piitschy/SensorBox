@@ -47,9 +47,12 @@ def main():
 
   db = DB('./var/db_measurements')
 
-  for func, pins, down in [(GPIO.IN, pins_in, GPIO.PUD_DOWN), (GPIO.OUT, pins_out, None)]:
+  for func, pins in [(GPIO.IN, pins_in), (GPIO.OUT, pins_out)]:
     for name, p  in pins.items():
-      GPIO.setup(p, func, pull_up_down=down)
+      if func == GPIO.IN:
+        GPIO.setup(p, func, pull_up_down=GPIO.PUD_DOWN)
+      else:
+        GPIO.setup(p, func, pull_up_down=GPIO.PUD_OFF)
 
   GPIO.setup(BEEPER, GPIO.OUT)
   GPIO.output(BEEPER, 1)
