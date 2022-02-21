@@ -76,9 +76,8 @@ def main():
       set_pin(BEEPER, 0)
       sleep(0.1)
       set_pin(BEEPER, 1)
-      if i+1 == times:
-        return
       sleep(0.3)
+    sleep(0.5)
     return
 
   def encode(val:float, bins:int=10 , min:float=0, max:float=500) -> str:
