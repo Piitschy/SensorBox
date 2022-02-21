@@ -49,10 +49,7 @@ def main():
 
   for func, pins in [(GPIO.IN, pins_in), (GPIO.OUT, pins_out)]:
     for name, p  in pins.items():
-      if func == GPIO.IN:
-        GPIO.setup(p, func, pull_up_down=GPIO.PUD_DOWN)
-      else:
-        GPIO.setup(p, func, pull_up_down=GPIO.PUD_OFF)
+      GPIO.setup(p, func)
 
   GPIO.setup(BEEPER, GPIO.OUT)
   GPIO.output(BEEPER, 1)
@@ -63,7 +60,7 @@ def main():
       break
     
 
-  read_pin = lambda p: False if GPIO.input(pins_in[p]) == 0 else True
+  read_pin = lambda p: True if GPIO.input(pins_in[p]) == 0 else False
 
   def set_pin(p:int, value=True, toggle:bool=False):
     if toggle:
