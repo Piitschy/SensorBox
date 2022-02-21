@@ -152,9 +152,6 @@ def main():
         beep(1)
         s.turn('on')
         continue
-      elif read('o'):
-        beep(3)
-        s.turn('off')
       elif read('r'): #read_pin('request'):
         beep(2)
         s.turn('off')
@@ -170,9 +167,6 @@ def main():
             f.write('\n'.join([str(e) for e in meas]))
         meas = []
         while True:
-          if read('o'):
-            beep(3)
-            s.turn('off')
           if read('s'):
             nullGPIOs()
             #clc()
