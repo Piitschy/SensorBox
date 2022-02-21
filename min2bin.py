@@ -60,7 +60,7 @@ def main():
       break
     
 
-  read_pin = lambda p: True if GPIO.input(pins_in[p]) == 0 else False
+  read_pin = lambda p: False if GPIO.input(pins_in[p]) == 0 else True
 
   def set_pin(p:int, value=True, toggle:bool=False):
     if toggle:
