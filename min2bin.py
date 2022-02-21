@@ -23,21 +23,21 @@ def main():
 
   ### CONF
   pins_in = {
-      's':2,   #pin 3 start
-      'o':3, #pin 5 standby
-      'r':4  #pin 7 request
+      's': 12, #pin 32 start
+      'o': 20, #pin 38 standby
+      'r': 16  #pin 36 request
     }
   pins_out = {
-    1   : 17, #pin 11
-    2   : 27, #pin 13
-    4   : 23, #pin 16 ex: 22/15
-    8   : 10, #pin 19
-    16  :  9, #pin 21
-    32  : 11, #pin 23
-    64  :  0, #pin 27
-    128 :  5, #pin 29
-    256 :  6, #pin 31
-    512 : 13  #pin 33
+    1   : 4,  #pin 7
+    2   : 17, #pin 11
+    4   : 18, #pin 12 ex: 22/15 BEEPER
+    8   : 27, #pin 13
+    16  : 23, #pin 16
+    32  : 24, #pin 18
+    64  :  5, #pin 29
+    128 :  6, #pin 31
+    256 : 13, #pin 33
+    512 : 26  #pin 37
   }
 
   ### SETUP
