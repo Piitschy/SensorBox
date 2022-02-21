@@ -32,6 +32,7 @@ class Measurement(object):
       if sensor != self.sensor.name:
         return 'Sensor names doesnt match'
       self.sensor.open()
+      self.sensor.turn('on')
       while time() <= start + duration:
         meas.append(self.sensor.measure())
         sleep(1/rate)
