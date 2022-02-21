@@ -36,6 +36,7 @@ class Measurement(object):
       while time() <= start + duration:
         meas.append(self.sensor.measure())
         sleep(1/rate)
+      self.sensor.turn('off')
       self.sensor.close()
       sleep(0.1)
     
