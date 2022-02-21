@@ -22,6 +22,8 @@ def main():
   clc = lambda: os.system('cls||clear')
 
   ### CONF
+  BEEPER:int = 22
+  
   pins_in = {
       's': 12, #pin 32 start
       'o': 20, #pin 38 standby
@@ -49,6 +51,9 @@ def main():
     for name, p  in pins.items():
       GPIO.setup(p, func)
 
+  GPIO.setup(BEEPER, GPIO.OUT)
+  GPIO.output(BEEPER, 1)
+
   while True:
     s = RF603.Serial()
     if s.mRange == 500:  
@@ -65,6 +70,16 @@ def main():
   def nullGPIOs():
     for p in pins_out.values():
       GPIO.output(p, 0)
+
+  def beep(times:int):
+    for i in range(times):
+      set_pin(BEEPER, 0)
+      sleep(0.1)
+      set_pin(BEEPER, 1)
+      if i+1 == times:
+        return
+      sleep(0.3)
+    return
 
   def encode(val:float, bins:int=10 , min:float=0, max:float=500) -> str:
     d_max = 2**bins
@@ -122,6 +137,7 @@ def main():
   s.turn('off')
   while True:
     if read('s'):
+      beep(1)
       s.turn('on')
       break
 
@@ -134,9 +150,14 @@ def main():
       meas.append(result)
     elif len(meas)>0:
       if read('s'):#read_pin('start'):
+        beep(1)
         s.turn('on')
         continue
+      elif read('o'):
+        beep(3)
+        s.turn('off')
       elif read('r'): #read_pin('request'):
+        beep(2)
         s.turn('off')
         minim = minimum(meas)
         bins = encode(minim)
@@ -150,9 +171,13 @@ def main():
             f.write('\n'.join([str(e) for e in meas]))
         meas = []
         while True:
+          if read('o'):
+            beep(3)
+            s.turn('off')
           if read('s'):
             nullGPIOs()
             #clc()
+            beep(1)
             s.turn('on')
             break
     continue

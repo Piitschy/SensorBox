@@ -19,3 +19,8 @@ Das ist das Pinning vom Raspberry über die Relays zur Robotersteuerung:
 |      O     | binary 128     |     6    |    31   |     9    |
 |      O     | binary 256     |    13    |    33   |    10    |
 |      O     | binary 512     |    26    |    37   |    12    |
+
+## Beep-Codes
+
+Momentan laufen die Beep-Codes nur in der Routine der Pin-control:
+
