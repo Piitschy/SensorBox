@@ -143,6 +143,7 @@ def main():
     if printing:
       print('WAITING FOR START')
       printing = False
+    
     if read('s'): # IF start
       if reset:
         beep(1)
@@ -155,15 +156,19 @@ def main():
       except:
         result = 0
       if printing:
-        print('MESSUNG')
+        print('MESSUNG STARTS')
         printing = False
       meas.append(result)
     elif len(meas)>0:
       if turn_off:
+        turn_off = False
         s.turn('off')
+        print('MESSUNG PAUSE')
+        beep(1)
         turn_off = False
       if read('s'): # IF start
         reset = True
+        print('START AGAIN')
         continue
       elif read('r'): # IF request
         print('REQUEST')
