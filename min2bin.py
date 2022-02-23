@@ -141,18 +141,20 @@ def main():
       break
 
   while True:
-    if read('s'): #read_pin('start'):
+    if read('s'): # IF start
       try:
         result = s.measure()
+        print('MESSUNG:',result)
       except:
         result = 0
       meas.append(result)
     elif len(meas)>0:
-      if read('s'):#read_pin('start'):
+      if read('s'): # IF start
         beep(1)
         s.turn('on')
         continue
-      elif read('r'): #read_pin('request'):
+      elif read('r'): # IF request
+        print('REQUEST')
         beep(2)
         s.turn('off')
         minim = minimum(meas)
@@ -168,8 +170,9 @@ def main():
         meas = []
         while True:
           if read('s'):
+            print('START AGAIN')
             nullGPIOs()
-            #clc()
+            clc()
             beep(1)
             s.turn('on')
             break
