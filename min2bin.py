@@ -134,17 +134,18 @@ def main():
   meas = []
   #clc()
   s.turn('off')
-  while True:
-    if read('s'):
-      beep(1)
-      s.turn('on')
-      break
+
+  reset = True
   printing = True
   while True:
     if printing:
       print('WAITING FOR START')
       printing = False
     if read('s'): # IF start
+      if reset:
+        beep(1)
+        s.turn('on')
+        reset = False
       try:
         result = s.measure()
         print('MESSUNG:',result)
@@ -180,10 +181,12 @@ def main():
             print('SEND VALUE')
             printing = False
           if not read('r'):
+            printing = True
             print('RESET')
             beep(3)
             nullGPIOs()
             clc()
+            reset = True
             break
     continue
 
