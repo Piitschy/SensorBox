@@ -171,7 +171,11 @@ def main():
             f.write('\n'.join([str(e) for e in meas]))
         meas = []
         print('WRITTEN')
+        p = True
         while True:
+          if p:
+            print('WAITING FOR START')
+            p = False
           if read('s'):
             print('START AGAIN')
             nullGPIOs()
