@@ -146,11 +146,14 @@ def main():
         beep(1)
         s.turn('on')
         reset = False
+        printing = True
       try:
         result = s.measure()
-        print('MESSUNG:',result)
       except:
         result = 0
+      if printing:
+        print('MESSUNG')
+        printing = False
       meas.append(result)
     elif len(meas)>0:
       if read('s'): # IF start
