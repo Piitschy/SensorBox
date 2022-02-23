@@ -139,8 +139,11 @@ def main():
       beep(1)
       s.turn('on')
       break
-
+  printing = True
   while True:
+    if printing:
+      print('WAITING FOR START')
+      printing = False
     if read('s'): # IF start
       try:
         result = s.measure()
@@ -174,14 +177,13 @@ def main():
         printing = True
         while True:
           if printing:
-            print('WAITING FOR START')
+            print('SEND VALUE')
             printing = False
-          if read('s'):
-            print('START AGAIN')
+          if not read('r'):
+            print('RESET')
+            beep(3)
             nullGPIOs()
             clc()
-            beep(1)
-            s.turn('on')
             break
     continue
 
