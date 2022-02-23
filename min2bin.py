@@ -164,10 +164,13 @@ def main():
         send(bins)
         try:
           write2db(meas)
+          print('WRITE IN DB')
         except:
+          print('WRITE IN FILE')
           with open("messungen_"+str(datetime.now())+".csv",'w') as f:
             f.write('\n'.join([str(e) for e in meas]))
         meas = []
+        print('WRITTEN')
         while True:
           if read('s'):
             print('START AGAIN')
