@@ -185,6 +185,10 @@ def main():
         print('WRITTEN')
         printing = True
         while True:
+          s.turn('on')
+          sleep(0.5)
+          s.turn('off')
+          sleep(0.5)
           if printing:
             print('SEND VALUE')
             printing = False
@@ -193,7 +197,7 @@ def main():
             print('RESET')
             beep(3)
             nullGPIOs()
-            print('\n\n')
+            print('\n')
             reset = True
             break
     continue
