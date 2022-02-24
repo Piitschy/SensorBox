@@ -165,7 +165,7 @@ def main():
         s.turn('off')
         print('MESSUNG PAUSE')
         beep(1)
-        turn_off = False
+        sleep(0.5)
       if read('s'): # IF start
         reset = True
         print('START AGAIN')
