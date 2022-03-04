@@ -9,6 +9,7 @@ Das ist das Pinning vom Raspberry über die Relays zur Robotersteuerung:
 |      I     | start          |    12    |    32   |    13    |
 |      I     | request        |    16    |    36   |    14    |
 |      I     | turn off laser |    20    |    38   |    15    |
+|      O     | running meas.  |    19    |    35   |    11    |
 |      O     | binary 1       |     4    |     7   |     1    |
 |      O     | binary 2       |    17    |    11   |     2    |
 |      O     | binary 4       |    18    |    12   |     3    |

@@ -30,6 +30,7 @@ def main():
       'r': 16  #pin 36 request
     }
   pins_out = {
+    'meas':19,#pin 35
     1   : 4,  #pin 7
     2   : 17, #pin 11
     4   : 18, #pin 12 ex: 22/15 BEEPER
@@ -148,6 +149,7 @@ def main():
       if reset:
         beep(1)
         s.turn('on')
+        set_pin(19, True)
         reset = False
         printing = True
         turn_off = True
@@ -162,6 +164,7 @@ def main():
     elif len(meas)>0:
       if turn_off:
         turn_off = False
+        set_pin(19,False)
         s.turn('off')
         print('MESSUNG PAUSE')
         beep(1)
@@ -173,6 +176,7 @@ def main():
       elif read('r'): # IF request
         print('REQUEST')
         beep(2)
+        set_pin(19,False)
         s.turn('off')
         minim = minimum(meas)
         bins = encode(minim)
