@@ -26,5 +26,7 @@ Das ist das Pinning vom Raspberry über die Relays zur Robotersteuerung:
 Momentan laufen die Beep-Codes nur in der Routine der Pin-control:
 
 1 Piep: Start/Pause der Messung
+
 2 Piep: Stop der Messung und Beginn der Auswertung und Übertragung
+
 3 Piep: Reset, bereit zum erneuten Starten
